@@ -40,7 +40,6 @@ class PurplePanel : public xpp::ui::XPanel {
     this->AddMouseMotionListener(printer);
     this->AddMouseListener(printer);
     this->AddMouseWheelListener(printer);
-
     this->AddComponent(std::make_unique<xpp::ui::XButton>("hello"));
   }
 
