@@ -18,79 +18,23 @@ cpp_header (
   ],
 )
 
-cpp_object (
-  name = "window",
-  srcs = [
-    "window.cc",
-  ],
-  deps = [
-    ":container",
-    ":include",
-    ":look_and_feel",
-    "//xpp_inherit/xlib:xdisplay",
-  ],
-)
-
-cpp_object (
-  name = "container",
-  srcs = [
-    "container.cc",
-  ],
-  deps = [
-    ":component",
-    ":graphics",
-    ":include",
-    "//xpp_inherit/gfx:util",
-  ],
-)
-
-cpp_object (
-  name = "component",
-  srcs = [
-    "component.cc",
-  ],
-  deps = [
-    ":include",
-    "//xpp_inherit/ui/layout:fill_layout",
-  ],
-)
-
-cpp_object (
-  name = "graphics",
-  srcs = [
-    "graphics.cc",
-  ],
-  deps = [
-    ":include",
-  ],
-)
-
-cpp_object (
-  name = "look_and_feel",
-  srcs = [
-    "look_and_feel.cc",
-  ],
-  deps = [
-    ":include",
-  ],
-)
-
-cpp_object (
-  name = "button",
+cc_object (
+  name = "xpp-uilib",
   srcs = [
     "button.cc",
-  ],
-  deps = [
-    ":include",
-  ],
-)
-
-cpp_object (
-  name = "panel",
-  srcs = [
+    "component.cc",
+    "container.cc",
+    "graphics.cc",
+    "look_and_feel.cc",
     "panel.cc",
+    "window.cc",
+  ],
+  includes = [
+    ":include",
   ],
   deps = [
-    ":include",
+    "//xpp_inherit/xlib:xpp-xlib",
+    "//xpp_inherit/gfx:util",
+    "//xpp_inherit/ui/layout:layouts",
   ],
 )

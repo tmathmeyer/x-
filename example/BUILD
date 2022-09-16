@@ -1,12 +1,12 @@
 langs("C")
 
-cpp_binary (
+cc_binary (
   name = "example",
   srcs = [ "example.cc", ],
-  deps = [
-    "//xpp_inherit/ui:button",
+  includes = [
     "//xpp_inherit/ui:include",
-    "//xpp_inherit/ui:panel",
-    "//xpp_inherit/ui:window",
+  ],
+  deps = [
+    "//xpp_inherit/ui:xpp-uilib",
   ],
 )

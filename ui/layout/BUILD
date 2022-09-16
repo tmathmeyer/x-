@@ -11,12 +11,12 @@ cpp_header (
   ],
 )
 
-cpp_object (
-  name = "fill_layout",
+cc_object (
+  name = "layouts",
   srcs = [
     "fill_layout.cc",
   ],
-  deps = [
+  includes = [
     ":include",
   ],
 )

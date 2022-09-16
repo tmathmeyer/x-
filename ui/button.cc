@@ -16,9 +16,7 @@ class ButtonEventListener : public xpp::ui::MouseMotionListener,
   void MouseExited(xpp::ui::MouseMotionEvent event) {
     event.active = false;
     button_->SetHovered(false);
-    puts("BEL::ME");
     button_->Repaint();
-    puts("~BEL::ME\n");
   }
 
   void MouseMoved(xpp::ui::MouseMotionEvent) { puts("MM"); }
@@ -46,15 +44,15 @@ void XButton::Paint(xpp::ui::Graphics* g) {
   else
     g->SetColor("ButtonBackground");
 
-  g->FillRoundedRect({0, 0}, g->GetDimensions(), 6);
+  g->FillRoundedRect({0, 0}, g->GetDimensions(), 4);
   g->SetColor("ButtonBorder");
-  g->DrawRoundedRect({0, 0}, g->GetDimensions(), 6);
+  g->DrawRoundedRect({0, 0}, g->GetDimensions(), 4);
   g->SetColor("TextColor");
-  g->DrawText({0, 0}, content_);
+  g->DrawText({0, (100 - 70) / 2}, content_);
 }
 
 std::optional<gfx::Rect> XButton::GetPreferredSize() const {
-  return gfx::Rect(content_.length() * 20, 100);
+  return gfx::Rect(content_.length() * 24, 100);
 }
 
 void XButton::SetHovered(bool hovered) {

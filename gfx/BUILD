@@ -10,7 +10,7 @@ cpp_header (
     "util.h",
   ],
   deps = [
-    "//base:check",
+    "//base:include",
   ],
   flags = [
     "-lfreetype",
@@ -20,12 +20,12 @@ cpp_header (
   ],
 )
 
-cpp_object (
+cc_object (
   name = "util",
   srcs = [
     "util.cc",
   ],
-  deps = [
+  include = [
     ":include",
   ],
 )

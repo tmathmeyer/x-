@@ -10,7 +10,7 @@ cpp_header (
     "mouse_wheel_listener.h",
   ],
   deps = [
-    "//base:proxy_ptr",
+    "//base:include",
     "//xpp_inherit/gfx:include",
   ],
 )

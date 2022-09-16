@@ -8,9 +8,9 @@ LookAndFeel::LookAndFeel() {
   SetColor("PanelBackground", gfx::Color::GRAY8);
   SetColor("PanelBorder", gfx::Color::GRAY6);
   SetColor("TextColor", gfx::Color::BLACK);
-  SetColor("ButtonBackground", gfx::Color::GREEN);
-  SetColor("ButtonActiveBackground", gfx::Color::BLUE);
-  SetColor("ButtonBorder", gfx::Color::RED);
+  SetColor("ButtonBackground", gfx::Color::GRAY5);
+  SetColor("ButtonActiveBackground", gfx::Color::GRAY3);
+  SetColor("ButtonBorder", gfx::Color::BLACK);
 }
 
 XColor LookAndFeel::GetXColor(std::shared_ptr<xlib::XColorMap> colormap,
