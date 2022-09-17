@@ -1,46 +1,11 @@
 #include "button.h"
+#include "button_listener.h"
 
 namespace xpp::ui {
 
-class ButtonEventListener : public MouseMotionListener, public MouseListener {
- public:
-  ButtonEventListener(XButton* button) { button_ = button; }
-
-  void MouseEntered(MouseMotionEvent* event) {
-    event->active = false;
-    button_->Enter();
-    button_->Repaint();
-  }
-
-  void MouseExited(MouseMotionEvent* event) {
-    event->active = false;
-    button_->Exit();
-    button_->Repaint();
-  }
-
-  void MousePressed(MouseEvent* event) {
-    event->active = false;
-    button_->Press();
-    button_->Repaint();
-  }
-
-  void MouseReleased(MouseEvent* event) {
-    event->active = false;
-    button_->Release();
-    button_->Repaint();
-  }
-
-  void MouseMoved(MouseMotionEvent*) {}
-  void MouseDragged(MouseMotionEvent*) {}
-  void MouseClicked(MouseEvent*) {}
-
- private:
-  XButton* button_;
-};
-
 XButton::XButton(std::string content) : content_(content) {
-  std::shared_ptr<ButtonEventListener> button_action =
-      std::make_shared<ButtonEventListener>(this);
+  std::shared_ptr<ButtonListener<XButton>> button_action =
+      std::make_shared<ButtonListener<XButton>>(this);
 
   this->AddMouseMotionListener(button_action);
   this->AddMouseListener(button_action);
@@ -92,15 +57,22 @@ void XButton::Enter() {
   hovered_ = true;
   depressed_ = false;
 }
+
 void XButton::Exit() {
   hovered_ = false;
   depressed_ = false;
 }
+
 void XButton::Press() {
   hovered_ = true;
   depressed_ = true;
 }
+
 void XButton::Release() {
+  if (depressed_ && hovered_) {
+    // Send Action!
+  }
+
   hovered_ = true;
   depressed_ = false;
 }
