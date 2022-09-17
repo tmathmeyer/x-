@@ -13,8 +13,8 @@ struct ContainerEvent {
 
 class ContainerListener {
  public:
-  virtual void ComponentRemoved(ContainerEvent) = 0;
-  virtual void ComponentAdded(ContainerEvent) = 0;
+  virtual void ComponentRemoved(ContainerEvent*) = 0;
+  virtual void ComponentAdded(ContainerEvent*) = 0;
 };
 
 }  // namespace xpp::ui

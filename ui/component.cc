@@ -35,6 +35,21 @@ void XComponent::SetParent(XContainer* parent) {
   parent_ = parent;
 }
 
+void XComponent::Paint(Graphics* g) {
+  // do nothing!
+  /*
+  gfx::Rect size = g->GetDimensions();
+  printf("component size = {%i,%i}\n", size.width, size.height);
+  g->DrawRect({10, 10}, {size.width - 20, size.height - 20});
+  g->SetColor("PanelBackground");
+  g->FillRect({20, 3}, {120, 14});
+  g->SetColor(gfx::Color::WHITE);
+  g->SetFontSize(4);
+  g->DrawText({20, 0}, "XComponent");
+  g->SetFontSize(10);
+  */
+}
+
 const XContainer* XComponent::GetParent() const {
   return parent_;
 }
@@ -74,65 +89,65 @@ void XComponent::AddMouseWheelListener(
   wheel_listeners_.push_back(listener);
 }
 
-void XComponent::MouseEntered(MouseMotionEvent event) {
+void XComponent::MouseEntered(MouseMotionEvent* event) {
   for (const auto& listener : motion_listeners_) {
-    if (!event.active)
+    if (!event->active)
       return;
     listener->MouseEntered(event);
   }
 }
 
-void XComponent::MouseExited(MouseMotionEvent event) {
+void XComponent::MouseExited(MouseMotionEvent* event) {
   for (const auto& listener : motion_listeners_) {
-    if (!event.active)
+    if (!event->active)
       return;
     listener->MouseExited(event);
   }
 }
 
-void XComponent::MouseMoved(MouseMotionEvent event) {
+void XComponent::MouseMoved(MouseMotionEvent* event) {
   for (const auto& listener : motion_listeners_) {
-    if (!event.active)
+    if (!event->active)
       return;
     listener->MouseMoved(event);
   }
 }
 
-void XComponent::MouseDragged(MouseMotionEvent event) {
+void XComponent::MouseDragged(MouseMotionEvent* event) {
   for (const auto& listener : motion_listeners_) {
-    if (!event.active)
+    if (!event->active)
       return;
     listener->MouseDragged(event);
   }
 }
 
-void XComponent::MousePressed(MouseEvent event) {
+void XComponent::MousePressed(MouseEvent* event) {
   for (const auto& listener : mouse_listeners_) {
-    if (!event.active)
+    if (!event->active)
       return;
     listener->MousePressed(event);
   }
 }
 
-void XComponent::MouseClicked(MouseEvent event) {
+void XComponent::MouseClicked(MouseEvent* event) {
   for (const auto& listener : mouse_listeners_) {
-    if (!event.active)
+    if (!event->active)
       return;
     listener->MouseClicked(event);
   }
 }
 
-void XComponent::MouseReleased(MouseEvent event) {
+void XComponent::MouseReleased(MouseEvent* event) {
   for (const auto& listener : mouse_listeners_) {
-    if (!event.active)
+    if (!event->active)
       return;
     listener->MouseReleased(event);
   }
 }
 
-void XComponent::WheelScrolled(MouseWheelEvent event) {
+void XComponent::WheelScrolled(MouseWheelEvent* event) {
   for (const auto& listener : wheel_listeners_) {
-    if (!event.active)
+    if (!event->active)
       return;
     listener->WheelScrolled(event);
   }

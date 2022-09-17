@@ -15,9 +15,9 @@ struct MouseEvent {
 
 class MouseListener {
  public:
-  virtual void MouseClicked(MouseEvent) = 0;
-  virtual void MousePressed(MouseEvent) = 0;
-  virtual void MouseReleased(MouseEvent) = 0;
+  virtual void MouseClicked(MouseEvent*) = 0;
+  virtual void MousePressed(MouseEvent*) = 0;
+  virtual void MouseReleased(MouseEvent*) = 0;
 };
 
 }  // namespace xpp::ui

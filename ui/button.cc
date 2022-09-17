@@ -2,29 +2,38 @@
 
 namespace xpp::ui {
 
-class ButtonEventListener : public xpp::ui::MouseMotionListener,
-                            public xpp::ui::MouseListener {
+class ButtonEventListener : public MouseMotionListener, public MouseListener {
  public:
   ButtonEventListener(XButton* button) { button_ = button; }
 
-  void MouseEntered(xpp::ui::MouseMotionEvent event) {
-    event.active = false;
-    button_->SetHovered(true);
+  void MouseEntered(MouseMotionEvent* event) {
+    event->active = false;
+    button_->Enter();
     button_->Repaint();
   }
 
-  void MouseExited(xpp::ui::MouseMotionEvent event) {
-    event.active = false;
-    button_->SetHovered(false);
+  void MouseExited(MouseMotionEvent* event) {
+    event->active = false;
+    button_->Exit();
+    button_->Repaint();
+    puts("MOUSE EXIT");
+  }
+
+  void MousePressed(MouseEvent* event) {
+    event->active = false;
+    button_->Press();
     button_->Repaint();
   }
 
-  void MouseMoved(xpp::ui::MouseMotionEvent) { puts("MM"); }
+  void MouseReleased(MouseEvent* event) {
+    event->active = false;
+    button_->Release();
+    button_->Repaint();
+  }
 
-  void MouseDragged(xpp::ui::MouseMotionEvent) { puts("MouseDragged!"); }
-  void MouseClicked(xpp::ui::MouseEvent) { puts("MouseClick"); }
-  void MousePressed(xpp::ui::MouseEvent) { puts("MousePress"); }
-  void MouseReleased(xpp::ui::MouseEvent) { puts("MouseRelease"); }
+  void MouseMoved(MouseMotionEvent*) {}
+  void MouseDragged(MouseMotionEvent*) {}
+  void MouseClicked(MouseEvent*) {}
 
  private:
   XButton* button_;
@@ -39,8 +48,11 @@ XButton::XButton(std::string content) : content_(content) {
 }
 
 void XButton::Paint(xpp::ui::Graphics* g) {
-  if (hovered_)
-    g->SetColor("ButtonActiveBackground");
+  XComponent::Paint(g);
+  if (depressed_)
+    g->SetColor("ButtonPressedBackground");
+  else if (hovered_)
+    g->SetColor("ButtonHoveredBackground");
   else
     g->SetColor("ButtonBackground");
 
@@ -55,8 +67,21 @@ std::optional<gfx::Rect> XButton::GetPreferredSize() const {
   return gfx::Rect(content_.length() * 24, 100);
 }
 
-void XButton::SetHovered(bool hovered) {
-  hovered_ = hovered;
+void XButton::Enter() {
+  hovered_ = true;
+  depressed_ = false;
+}
+void XButton::Exit() {
+  hovered_ = false;
+  depressed_ = false;
+}
+void XButton::Press() {
+  hovered_ = true;
+  depressed_ = true;
+}
+void XButton::Release() {
+  hovered_ = true;
+  depressed_ = false;
 }
 
 }  // namespace xpp::ui

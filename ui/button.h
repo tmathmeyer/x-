@@ -10,10 +10,15 @@ class XButton : public XComponent {
   void Paint(xpp::ui::Graphics* g) override;
   std::optional<gfx::Rect> GetPreferredSize() const override;
 
-  void SetHovered(bool);
+  void Enter();
+  void Exit();
+  void Press();
+  void Release();
  
  private:
   std::string content_;
+
+  bool depressed_ = false;
   bool hovered_ = false;
 };
 

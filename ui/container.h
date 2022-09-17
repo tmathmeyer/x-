@@ -21,14 +21,14 @@ class XContainer : public XComponent {
   virtual void Paint(Graphics* g) override;
 
   // XComponent listener overrides
-  virtual void MouseEntered(MouseMotionEvent) override;
-  virtual void MouseExited(MouseMotionEvent) override;
-  virtual void MouseMoved(MouseMotionEvent) override;
-  virtual void MouseDragged(MouseMotionEvent) override;
-  virtual void MousePressed(MouseEvent) override;
-  virtual void MouseClicked(MouseEvent) override;
-  virtual void MouseReleased(MouseEvent) override;
-  virtual void WheelScrolled(MouseWheelEvent) override;
+  virtual void MouseEntered(MouseMotionEvent*) override;
+  virtual void MouseExited(MouseMotionEvent*) override;
+  virtual void MouseMoved(MouseMotionEvent*) override;
+  virtual void MouseDragged(MouseMotionEvent*) override;
+  virtual void MousePressed(MouseEvent*) override;
+  virtual void MouseClicked(MouseEvent*) override;
+  virtual void MouseReleased(MouseEvent*) override;
+  virtual void WheelScrolled(MouseWheelEvent*) override;
 
  protected:
   std::vector<std::unique_ptr<XComponent>> components_;

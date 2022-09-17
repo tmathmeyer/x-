@@ -25,7 +25,7 @@ void XContainer::RemoveComponent(XComponent* to_remove) {
     if (comp->GetName() == to_remove->GetName()) {
       ContainerEvent event = {.parent = this, .child = std::move(comp)};
       for (const auto& listener : container_listeners_)
-        listener->ComponentRemoved(event);
+        listener->ComponentRemoved(&event);
     } else {
       replacement.push_back(std::move(comp));
     }
@@ -37,7 +37,7 @@ void XContainer::RemoveAll() {
   for (std::unique_ptr<XComponent>& comp : components_) {
     ContainerEvent event = {.parent = this, .child = std::move(comp)};
     for (const auto& listener : container_listeners_)
-      listener->ComponentRemoved(event);
+      listener->ComponentRemoved(&event);
   }
   components_.clear();
 }
@@ -48,154 +48,159 @@ void XContainer::AddComponentListener(
 }
 
 void XContainer::Paint(Graphics* g) {
+  XComponent::Paint(g);
   for (auto position : layout_->DoLayout(components_, g->GetDimensions())) {
     Graphics sub = g->SubGraphics(position.at, position.size);
     position.component->Paint(&sub);
   }
 }
 
-void XContainer::MouseEntered(MouseMotionEvent event) {
+void XContainer::MouseEntered(MouseMotionEvent* event) {
   XComponent::MouseEntered(event);
-  if (!event.active)
+  if (!event->active)
     return;
   for (auto position : layout_->DoLayout(components_, GetDimensions())) {
-    auto inner = InnerPosition({position.at, position.size}, event.location);
+    auto inner = InnerPosition({position.at, position.size}, event->location);
     if (inner.has_value()) {
       MouseMotionEvent copy = {inner.value(), inner.value(),
                                position.component};
-      position.component->MouseEntered(copy);
-      event.active = copy.active;
+      position.component->MouseEntered(&copy);
+      event->active = copy.active;
       return;
     }
   }
 }
 
-void XContainer::MouseExited(MouseMotionEvent event) {
+void XContainer::MouseExited(MouseMotionEvent* event) {
   XComponent::MouseExited(event);
-  if (!event.active)
+  if (!event->active)
     return;
   for (auto position : layout_->DoLayout(components_, GetDimensions())) {
-    auto inner = InnerPosition({position.at, position.size}, event.location);
+    auto inner = InnerPosition({position.at, position.size}, event->location);
     if (inner.has_value()) {
       MouseMotionEvent copy = {inner.value(), inner.value(),
                                position.component};
-      position.component->MouseExited(copy);
-      event.active = copy.active;
+      position.component->MouseExited(&copy);
+      event->active = copy.active;
       return;
     }
   }
 }
 
-void XContainer::MouseMoved(MouseMotionEvent event) {
+void XContainer::MouseMoved(MouseMotionEvent* event) {
   XComponent::MouseMoved(event);
-  if (!event.active)
+  if (!event->active)
     return;
   bool moved = false;
   for (auto position : layout_->DoLayout(components_, GetDimensions())) {
-    auto at = InnerPosition({position.at, position.size}, event.location);
+    auto at = InnerPosition({position.at, position.size}, event->location);
     auto prev =
-        InnerPosition({position.at, position.size}, event.previous_location);
+        InnerPosition({position.at, position.size}, event->previous_location);
     if (at.has_value()) {
       MouseMotionEvent copy = {at.value(), at.value(), position.component};
       if (!prev.has_value()) {
-        position.component->MouseEntered(copy);
+        position.component->MouseEntered(&copy);
         copy.active = true;
       }
       if (!moved) {
         moved = true;
         copy.previous_location = *prev;
-        position.component->MouseMoved(copy);
-        event.active = copy.active;
+        position.component->MouseMoved(&copy);
+        event->active = copy.active;
       }
     } else if (prev.has_value()) {
       MouseMotionEvent copy = {prev.value(), prev.value(), position.component};
-      position.component->MouseExited(copy);
+      position.component->MouseExited(&copy);
     }
   }
 }
 
-void XContainer::MouseDragged(MouseMotionEvent event) {
+void XContainer::MouseDragged(MouseMotionEvent* event) {
   XComponent::MouseDragged(event);
-  if (!event.active)
+  if (!event->active)
     return;
   bool moved = false;
   for (auto position : layout_->DoLayout(components_, GetDimensions())) {
-    auto at = InnerPosition({position.at, position.size}, event.location);
+    auto at = InnerPosition({position.at, position.size}, event->location);
     auto prev =
-        InnerPosition({position.at, position.size}, event.previous_location);
+        InnerPosition({position.at, position.size}, event->previous_location);
     if (at.has_value()) {
       MouseMotionEvent copy = {at.value(), at.value(), position.component};
       if (!prev.has_value()) {
-        position.component->MouseEntered(copy);
+        position.component->MouseEntered(&copy);
         copy.active = true;
       }
       if (!moved) {
         moved = true;
-        position.component->MouseDragged(copy);
-        event.active = copy.active;
+        copy.previous_location = *prev;
+        position.component->MouseDragged(&copy);
+        event->active = copy.active;
       }
     } else if (prev.has_value()) {
       MouseMotionEvent copy = {prev.value(), prev.value(), position.component};
-      position.component->MouseExited(copy);
+      position.component->MouseExited(&copy);
     }
   }
 }
 
-void XContainer::MousePressed(MouseEvent event) {
+void XContainer::MousePressed(MouseEvent* event) {
   XComponent::MousePressed(event);
-  if (!event.active)
+  if (!event->active)
     return;
   for (auto position : layout_->DoLayout(components_, GetDimensions())) {
-    auto inner = InnerPosition({position.at, position.size}, event.location);
+    auto inner = InnerPosition({position.at, position.size}, event->location);
     if (inner.has_value()) {
-      MouseEvent copy = {inner.value(), event.mouse_button, position.component};
-      position.component->MousePressed(copy);
-      event.active = copy.active;
+      MouseEvent copy = {inner.value(), event->mouse_button,
+                         position.component};
+      position.component->MousePressed(&copy);
+      event->active = copy.active;
       return;
     }
   }
 }
 
-void XContainer::MouseClicked(MouseEvent event) {
+void XContainer::MouseClicked(MouseEvent* event) {
   XComponent::MouseClicked(event);
-  if (!event.active)
+  if (!event->active)
     return;
   for (auto position : layout_->DoLayout(components_, GetDimensions())) {
-    auto inner = InnerPosition({position.at, position.size}, event.location);
+    auto inner = InnerPosition({position.at, position.size}, event->location);
     if (inner.has_value()) {
-      MouseEvent copy = {inner.value(), event.mouse_button, position.component};
-      position.component->MouseClicked(copy);
-      event.active = copy.active;
+      MouseEvent copy = {inner.value(), event->mouse_button,
+                         position.component};
+      position.component->MouseClicked(&copy);
+      event->active = copy.active;
       return;
     }
   }
 }
 
-void XContainer::MouseReleased(MouseEvent event) {
+void XContainer::MouseReleased(MouseEvent* event) {
   XComponent::MouseReleased(event);
-  if (!event.active)
+  if (!event->active)
     return;
   for (auto position : layout_->DoLayout(components_, GetDimensions())) {
-    auto inner = InnerPosition({position.at, position.size}, event.location);
+    auto inner = InnerPosition({position.at, position.size}, event->location);
     if (inner.has_value()) {
-      MouseEvent copy = {inner.value(), event.mouse_button, position.component};
-      position.component->MouseReleased(copy);
-      event.active = copy.active;
+      MouseEvent copy = {inner.value(), event->mouse_button,
+                         position.component};
+      position.component->MouseReleased(&copy);
+      event->active = copy.active;
       return;
     }
   }
 }
 
-void XContainer::WheelScrolled(MouseWheelEvent event) {
+void XContainer::WheelScrolled(MouseWheelEvent* event) {
   XComponent::WheelScrolled(event);
-  if (!event.active)
+  if (!event->active)
     return;
   for (auto position : layout_->DoLayout(components_, GetDimensions())) {
-    auto inner = InnerPosition({position.at, position.size}, event.location);
+    auto inner = InnerPosition({position.at, position.size}, event->location);
     if (inner.has_value()) {
-      MouseWheelEvent copy = {inner.value(), event.vector, position.component};
-      position.component->WheelScrolled(copy);
-      event.active = copy.active;
+      MouseWheelEvent copy = {inner.value(), event->vector, position.component};
+      position.component->WheelScrolled(&copy);
+      event->active = copy.active;
       return;
     }
   }

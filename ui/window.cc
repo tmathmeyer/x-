@@ -180,7 +180,6 @@ void XWindow::SetVisible(bool visibility) {
 }
 
 void XWindow::Repaint() {
-  puts("XW::Repaint");
   if (exposed_to_ != dimensions_) {
     dimensions_ = exposed_to_;
     SetDimensions(dimensions_);
@@ -217,7 +216,7 @@ void XWindow::RunEventLoop() {
         MouseMotionEvent e = {.location = location,
                               .previous_location = location,
                               .component = this};
-        MouseEntered(e);
+        MouseEntered(&e);
         break;
       }
       case LeaveNotify: {
@@ -226,7 +225,7 @@ void XWindow::RunEventLoop() {
         MouseMotionEvent e = {.location = location,
                               .previous_location = location,
                               .component = this};
-        MouseExited(e);
+        MouseExited(&e);
         break;
       }
       case MotionNotify: {
@@ -236,9 +235,9 @@ void XWindow::RunEventLoop() {
                               .component = this,
                               .mouse_button = mouse_button_};
         if (mouse_button_)
-          MouseDragged(e);
+          MouseDragged(&e);
         else
-          MouseMoved(e);
+          MouseMoved(&e);
         previous_mouse_location_ = location;
         break;
       }
@@ -249,13 +248,13 @@ void XWindow::RunEventLoop() {
           MouseWheelEvent e = {.location = press_location_,
                                .vector = GetMotionVector(event.xbutton.button),
                                .component = this};
-          WheelScrolled(e);
+          WheelScrolled(&e);
         } else {
           mouse_button_ = event.xbutton.button;
           MouseEvent e = {.location = press_location_,
                           .mouse_button = mouse_button_,
                           .component = this};
-          MousePressed(e);
+          MousePressed(&e);
         }
         break;
       }
@@ -266,10 +265,10 @@ void XWindow::RunEventLoop() {
           MouseEvent e = {.location = location,
                           .mouse_button = mouse_button_,
                           .component = this};
-          MouseReleased(e);
+          MouseReleased(&e);
           if (location == press_location_) {
             e.active = true;
-            MouseClicked(e);
+            MouseClicked(&e);
           }
           press_location_ = {0, 0};
           mouse_button_ = 0;

@@ -17,10 +17,10 @@ struct MouseMotionEvent {
 
 class MouseMotionListener {
  public:
-  virtual void MouseEntered(MouseMotionEvent) = 0;
-  virtual void MouseExited(MouseMotionEvent) = 0;
-  virtual void MouseMoved(MouseMotionEvent) = 0;
-  virtual void MouseDragged(MouseMotionEvent) = 0;
+  virtual void MouseEntered(MouseMotionEvent*) = 0;
+  virtual void MouseExited(MouseMotionEvent*) = 0;
+  virtual void MouseMoved(MouseMotionEvent*) = 0;
+  virtual void MouseDragged(MouseMotionEvent*) = 0;
 };
 
 }  // namespace xpp::ui

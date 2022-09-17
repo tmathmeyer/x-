@@ -16,7 +16,7 @@ class XComponent {
  public:
   XComponent();
 
-  virtual void Paint(Graphics* g) = 0;
+  virtual void Paint(Graphics* g);
 
   virtual const XContainer* GetParent() const;
   virtual const std::string& GetName() const;
@@ -30,14 +30,14 @@ class XComponent {
   virtual void AddMouseListener(std::shared_ptr<MouseListener>);
   virtual void AddMouseWheelListener(std::shared_ptr<MouseWheelListener>);
 
-  virtual void MouseEntered(MouseMotionEvent);
-  virtual void MouseExited(MouseMotionEvent);
-  virtual void MouseMoved(MouseMotionEvent);
-  virtual void MouseDragged(MouseMotionEvent);
-  virtual void MousePressed(MouseEvent);
-  virtual void MouseClicked(MouseEvent);
-  virtual void MouseReleased(MouseEvent);
-  virtual void WheelScrolled(MouseWheelEvent);
+  virtual void MouseEntered(MouseMotionEvent*);
+  virtual void MouseExited(MouseMotionEvent*);
+  virtual void MouseMoved(MouseMotionEvent*);
+  virtual void MouseDragged(MouseMotionEvent*);
+  virtual void MousePressed(MouseEvent*);
+  virtual void MouseClicked(MouseEvent*);
+  virtual void MouseReleased(MouseEvent*);
+  virtual void WheelScrolled(MouseWheelEvent*);
 
  private:
   XContainer* parent_ = nullptr;

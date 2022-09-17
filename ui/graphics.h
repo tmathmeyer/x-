@@ -44,13 +44,14 @@ class Graphics {
            gfx::Coord,
            gfx::Rect);
 
-  gfx::Color color_ = gfx::Color::BLACK;
-  gfx::Font font_;
-
   std::shared_ptr<xlib::XGraphics> graphics_;
   std::shared_ptr<xlib::XColorMap> colormap_;
   std::shared_ptr<LookAndFeel> laf_;
-  gfx::Coord tlc_;
+  gfx::Color color_ = gfx::Color::BLACK;
+  gfx::Font font_;
+
+
+  gfx::Coord offset_;
   gfx::Rect size_;
 };
 

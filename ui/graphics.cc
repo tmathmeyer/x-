@@ -5,12 +5,12 @@ namespace xpp::ui {
 Graphics::Graphics(std::shared_ptr<xlib::XGraphics> g,
                    std::shared_ptr<xlib::XColorMap> colormap,
                    std::shared_ptr<LookAndFeel> laf,
-                   gfx::Coord at,
+                   gfx::Coord offset,
                    gfx::Rect size)
     : graphics_(std::move(g)),
       colormap_(std::move(colormap)),
       laf_(std::move(laf)),
-      tlc_(at),
+      offset_(offset),
       size_(size) {}
 
 Graphics::Graphics(std::shared_ptr<xlib::XGraphics> g,
@@ -18,14 +18,14 @@ Graphics::Graphics(std::shared_ptr<xlib::XGraphics> g,
                    std::shared_ptr<LookAndFeel> laf,
                    gfx::Color color,
                    gfx::Font font,
-                   gfx::Coord at,
+                   gfx::Coord offset,
                    gfx::Rect size)
     : graphics_(std::move(g)),
       colormap_(std::move(colormap)),
       laf_(std::move(laf)),
       color_(color),
       font_(font),
-      tlc_(at),
+      offset_(offset),
       size_(size) {}
 
 void Graphics::SetColor(gfx::Color color) {
@@ -55,17 +55,19 @@ gfx::Rect Graphics::GetDimensions() const {
 
 void Graphics::FillRect(gfx::Coord at, gfx::Rect size) {
   // TODO: use clamping utils of some sort
-  graphics_->XFillRectangle(at.x, at.y, size.width, size.height);
+  graphics_->XFillRectangle(offset_.x + at.x, offset_.y + at.y, size.width,
+                            size.height);
 }
 
 void Graphics::DrawRect(gfx::Coord at, gfx::Rect size) {
   // TODO: use clamping utils of some sort
-  graphics_->XDrawRectangle(at.x, at.y, size.width, size.height);
+  graphics_->XDrawRectangle(offset_.x + at.x, offset_.y + at.y, size.width,
+                            size.height);
 }
 
 void Graphics::DrawRoundedRect(gfx::Coord at, gfx::Rect size, uint32_t radius) {
-  uint32_t x = at.x + tlc_.x;
-  uint32_t y = at.y + tlc_.y;
+  uint32_t x = at.x + offset_.x;
+  uint32_t y = at.y + offset_.y;
   uint32_t w = size.width;
   uint32_t h = size.height;
   graphics_->XSetLineAttributes(1, 0, 0, 0);
@@ -84,12 +86,12 @@ void Graphics::DrawRoundedRect(gfx::Coord at, gfx::Rect size, uint32_t radius) {
 }
 
 void Graphics::FillRoundedRect(gfx::Coord at, gfx::Rect size, uint32_t radius) {
-  uint32_t x = at.x + tlc_.x;
-  uint32_t y = at.y + tlc_.y;
+  uint32_t x = at.x + offset_.x;
+  uint32_t y = at.y + offset_.y;
   uint32_t w = size.width;
   uint32_t h = size.height;
 
-  graphics_->XFillRectangle(x + radius, 0, w - radius * 2, h);
+  graphics_->XFillRectangle(x + radius, y, w - radius * 2, h);
   graphics_->XFillRectangle(x, y + radius, w, h - radius * 2);
   graphics_->XFillArc(x, y, radius * 2, radius * 2, 180 * 64, -90 * 64);
   graphics_->XFillArc(x + w - radius * 2, y, radius * 2, radius * 2, 0,
@@ -101,18 +103,19 @@ void Graphics::FillRoundedRect(gfx::Coord at, gfx::Rect size, uint32_t radius) {
 }
 
 void Graphics::DrawText(gfx::Coord at, std::string message) {
+  auto x = at.x + offset_.x;
+  auto y = at.y + offset_.y;
   switch (font_.mode_) {
     case gfx::Font::TextRenderingMode::kXorg: {
-      graphics_->XDrawString(at.x, at.y + font_.Height(), message.c_str(),
+      graphics_->XDrawString(x, y + font_.Height(), message.c_str(),
                              message.length());
       return;
     }
     case gfx::Font::TextRenderingMode::kXFT: {
       auto xft_color = laf_->GetXFTColor(graphics_, color_);
-      XftDrawStringUtf8(laf_->xft_ctx_, &xft_color, font_.xft_font_, at.x,
-                        at.y + font_.Height(),
-                        (const unsigned char*)message.c_str(),
-                        message.length());
+      XftDrawStringUtf8(
+          laf_->xft_ctx_, &xft_color, font_.xft_font_, x, y + font_.Height(),
+          (const unsigned char*)message.c_str(), message.length());
       return;
     }
     default: {
@@ -121,48 +124,25 @@ void Graphics::DrawText(gfx::Coord at, std::string message) {
   }
 }
 
-Graphics Graphics::SubGraphics(gfx::Coord at, gfx::Rect size) {
-  // TODO: clamp size
+Graphics Graphics::SubGraphics(gfx::Coord offset, gfx::Rect size) {
+  CHECK(offset.x >= 0);
+  CHECK(offset.y >= 0);
 
-  uint32_t width = size.width;
-  uint32_t height = size.width;
-  int64_t x = at.x;
-  int64_t y = at.y;
+  gfx::Coord new_offset = offset_ + offset;
 
-  if (at.x < 0) {
-    if (abs(at.x) < size.width) {
-      width -= abs(at.x);
-    } else {
-      width = 0;
-    }
-    x = 0;
-  }
-  if (at.y < 0) {
-    if (abs(at.y) < size.height) {
-      height -= abs(at.y);
-    } else {
-      height = 0;
-    }
-    y = 0;
-  }
+  if (new_offset.x > offset_.x + size_.width)
+    new_offset = {offset_.x + size_.width, new_offset.y};
+  if (new_offset.y > offset_.y + size_.height)
+    new_offset = {new_offset.x, new_offset.y + size_.height};
 
-  if (x > size_.width) {
-    x = x + tlc_.x + size_.width;
-    width = 0;
-  } else {
-    width = std::min(size.width, static_cast<uint32_t>(size.width - x));
-    x = x + tlc_.x;
-  }
+  uint32_t max_width = size_.width - offset.x;
+  uint32_t max_height = size_.height - offset.y;
+  gfx::Rect new_size = {
+      std::min(size.width, max_width),
+      std::min(size.height, max_height),
+  };
 
-  if (y > size_.height) {
-    y = tlc_.y + size_.height;
-    height = 0;
-  } else {
-    height = std::min(size.height, static_cast<uint32_t>(size.height - y));
-    y = y + tlc_.y;
-  }
-
-  return {graphics_, colormap_, laf_, color_, font_, {x, y}, {width, height}};
+  return {graphics_, colormap_, laf_, color_, font_, new_offset, new_size};
 }
 
 }  // namespace xpp::ui

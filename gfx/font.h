@@ -18,7 +18,7 @@ class Font {
   uint32_t Height() const {
     switch (mode_) {
       case TextRenderingMode::kXFT:
-        return xft_font_->ascent + xft_font_->descent;
+        return xft_font_->ascent;
       default:
         return 0;
     }

@@ -15,7 +15,7 @@ struct MouseWheelEvent {
 
 class MouseWheelListener {
  public:
-  virtual void WheelScrolled(MouseWheelEvent) = 0;
+  virtual void WheelScrolled(MouseWheelEvent*) = 0;
 };
 
 }  // namespace xpp::ui
