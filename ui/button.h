@@ -20,6 +20,9 @@ class XButton : public XComponent {
 
   bool depressed_ = false;
   bool hovered_ = false;
+
+  uint32_t hpadding_ = 40;
+  uint32_t vshadow_ = 2;
 };
 
 }  // namespace xpp::ui

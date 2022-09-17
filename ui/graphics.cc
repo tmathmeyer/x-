@@ -53,6 +53,10 @@ gfx::Rect Graphics::GetDimensions() const {
   return size_;
 }
 
+uint32_t Graphics::GetFontHeight() const {
+  return font_.Height();
+}
+
 void Graphics::FillRect(gfx::Coord at, gfx::Rect size) {
   // TODO: use clamping utils of some sort
   graphics_->XFillRectangle(offset_.x + at.x, offset_.y + at.y, size.width,

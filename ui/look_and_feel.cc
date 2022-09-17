@@ -8,10 +8,21 @@ LookAndFeel::LookAndFeel() {
   SetColor("PanelBackground", gfx::Color::GRAY8);
   SetColor("PanelBorder", gfx::Color::GRAY6);
   SetColor("TextColor", gfx::Color::BLACK);
-  SetColor("ButtonBackground", gfx::Color::GRAY5);
-  SetColor("ButtonHoveredBackground", gfx::Color::GRAY3);
+
+  SetColor("ButtonTextColor", gfx::Color::WHITE);
+  SetColor("ButtonBackground", gfx::Color::BLUE);
+  SetColor("ButtonShadow", gfx::Color::GRAY2);
+  SetColor("ButtonBorder", gfx::Color::GRAY5);
+
+  SetColor("ButtonHoveredTextColor", gfx::Color::WHITE);
+  SetColor("ButtonHoveredBackground", gfx::Color::BLUE.Burn());
+  SetColor("ButtonHoveredShadow", gfx::Color::GRAY2);
+  SetColor("ButtonHoveredBorder", gfx::Color::GRAY5);
+
+  SetColor("ButtonPressedTextColor", gfx::Color::WHITE);
   SetColor("ButtonPressedBackground", gfx::Color::BLUE);
-  SetColor("ButtonBorder", gfx::Color::BLACK);
+  SetColor("ButtonPressedShadow", gfx::Color::GRAY2);
+  SetColor("ButtonPressedBorder", gfx::Color::GRAY5);
 
 
 

@@ -25,6 +25,7 @@ class Graphics {
   void SetFont(gfx::Font font);
 
   gfx::Rect GetDimensions() const;
+  uint32_t GetFontHeight() const;
 
   void FillRect(gfx::Coord at, gfx::Rect size);
   void DrawRect(gfx::Coord at, gfx::Rect size);

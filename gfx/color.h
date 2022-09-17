@@ -1,10 +1,31 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 
 #include "base/check.h"
 
 namespace xpp::gfx {
+
+namespace {
+
+template <typename Numeric>
+Numeric hue2rgb(Numeric p, Numeric q, Numeric t) {
+  if (t < 0)
+    t += 1;
+  if (t > 1)
+    t -= 1;
+  if (t < 1. / 6)
+    return p + (q - p) * 6 * t;
+  if (t < 1. / 2)
+    return q;
+  if (t < 2. / 3)
+    return p + (q - p) * (2. / 3 - t) * 6;
+
+  return p;
+}
+
+}  // namespace
 
 template <typename Depth>
 class ColorImpl {
@@ -52,16 +73,56 @@ class ColorImpl {
     CHECK((C >= 0 && M >= 0 && Y >= 0 && K >= 0));
     CHECK((C <= 100 && M <= 100 && Y <= 100 && K <= 100));
 
-    int R = ((100 - C) * (100 - K) * Depth::Max) / 10000;
-    int G = ((100 - M) * (100 - K) * Depth::Max) / 10000;
-    int B = ((100 - Y) * (100 - K) * Depth::Max) / 10000;
+    Int R = ((100 - C) * (100 - K) * Depth::Max) / 10000;
+    Int G = ((100 - M) * (100 - K) * Depth::Max) / 10000;
+    Int B = ((100 - Y) * (100 - K) * Depth::Max) / 10000;
 
     return ColorImpl(R, G, B);
   }
 
-  static ColorImpl HSV(Float H, Float S, Float V) { return Black(); }
+  static ColorImpl HSV(Float H, Float S, Float V) {
+    CHECK(H > 360 || H < 0 || S > 100 || S < 0 || V > 100 || V < 0);
 
-  static ColorImpl HSL(Float H, Float S, Float L) { return Black(); }
+    Float s = S / 100;
+    Float v = V / 100;
+    Float C = s * v;
+    Float X = C * (1 - std::abs(fmod(H / 60.0, 2) - 1));
+    Float m = v - C;
+    Float r, g, b;
+    if (H >= 0 && H < 60) {
+      r = C, g = X, b = 0;
+    } else if (H >= 60 && H < 120) {
+      r = X, g = C, b = 0;
+    } else if (H >= 120 && H < 180) {
+      r = 0, g = C, b = X;
+    } else if (H >= 180 && H < 240) {
+      r = 0, g = X, b = C;
+    } else if (H >= 240 && H < 300) {
+      r = X, g = 0, b = C;
+    } else {
+      r = C, g = 0, b = X;
+    }
+    Int R = (r + m) * Depth::Max;
+    Int G = (g + m) * Depth::Max;
+    Int B = (b + m) * Depth::Max;
+    return ColorImpl(R, G, B);
+  }
+
+  static ColorImpl HSL(Float H, Float S, Float L) {
+    Float R = 0;
+    Float G = 0;
+    Float B = 0;
+    if (S == 0) {
+      R = G = B = L * Depth::Max;
+    } else {
+      Float q = L < 0.5 ? L * (1 + S) : L + S - L * S;
+      Float p = 2 * L - q;
+      R = hue2rgb<Float>(p, q, H + 1.0 / 3) * Depth::Max;
+      G = hue2rgb<Float>(p, q, H) * Depth::Max;
+      B = hue2rgb<Float>(p, q, H - 1.0 / 3) * Depth::Max;
+    }
+    return ColorImpl(R, G, B);
+  }
 
   static ColorImpl Black() { return ColorImpl(0, 0, 0); }
 
@@ -69,13 +130,49 @@ class ColorImpl {
     return ColorImpl(Depth::Max, Depth::Max, Depth::Max);
   }
 
-  uint16_t red() { return static_cast<uint16_t>(R) * Depth::Scale; }
+  uint16_t red() const { return static_cast<uint16_t>(R) * Depth::Scale; }
 
-  uint16_t green() { return static_cast<uint16_t>(G) * Depth::Scale; }
+  uint16_t green() const { return static_cast<uint16_t>(G) * Depth::Scale; }
 
-  uint16_t blue() { return static_cast<uint16_t>(B) * Depth::Scale; }
+  uint16_t blue() const { return static_cast<uint16_t>(B) * Depth::Scale; }
 
-  bool operator==(const ColorImpl& other) {
+  std::tuple<Float, Float, Float> GetHSL() const {
+    Float r = (Float)R / Depth::Max;
+    Float g = (Float)G / Depth::Max;
+    Float b = (Float)B / Depth::Max;
+
+    Float max = std::max(std::max(r, g), b);
+    Float min = std::min(std::min(r, g), b);
+
+    Float H, S, L;
+    H = S = L = (max + min) / 2;
+
+    if (max == min) {
+      H = S = 0;
+    } else {
+      Float d = max - min;
+      S = (L > 0.5) ? d / (2 - max - min) : d / (max + min);
+      if (max == r) {
+        H = (g - b) / d + (g < b ? 6 : 0);
+      } else if (max == g) {
+        H = (b - r) / d + 2;
+      } else if (max == b) {
+        H = (r - g) / d + 4;
+      }
+
+      H /= 6;
+    }
+
+    return std::tie(H, S, L);
+  }
+
+  ColorImpl Burn() const {
+    auto hsl = GetHSL();
+    return ColorImpl::HSL(std::get<0>(hsl), std::get<1>(hsl),
+                          std::get<2>(hsl) * 0.9);
+  }
+
+  bool operator==(const ColorImpl& other) const {
     return other.R == R && other.G == G && other.B == B;
   }
 
