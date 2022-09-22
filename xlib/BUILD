@@ -14,7 +14,7 @@ cpp_header (
   ],
   deps = [
     "//base/status:include",
-    "//xpp_inherit/gfx:include",
+    "//xpp/gfx:include",
   ]
 )
 

@@ -7,7 +7,7 @@ cpp_header (
     "layout.h",
   ],
   deps = [
-    "//xpp_inherit/gfx:include",
+    "//xpp/gfx:include",
   ],
 )
 

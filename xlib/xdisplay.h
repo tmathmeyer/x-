@@ -12,8 +12,8 @@
 #include <X11/extensions/Xrandr.h>
 #include <X11/extensions/Xrender.h>
 
-#include "xpp_inherit/gfx/coord.h"
-#include "xpp_inherit/gfx/rect.h"
+#include "xpp/gfx/coord.h"
+#include "xpp/gfx/rect.h"
 
 #include "xorg_typemap.h"
 

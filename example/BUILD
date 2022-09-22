@@ -4,9 +4,9 @@ cc_binary (
   name = "example",
   srcs = [ "example.cc", ],
   includes = [
-    "//xpp_inherit/ui:include",
+    "//xpp/ui:include",
   ],
   deps = [
-    "//xpp_inherit/ui:xpp-uilib",
+    "//xpp/ui:xpp-uilib",
   ],
 )

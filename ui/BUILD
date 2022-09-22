@@ -13,9 +13,9 @@ cpp_header (
     "window.h",
   ],
   deps = [
-    "//xpp_inherit/xlib:include",
-    "//xpp_inherit/ui/event:include",
-    "//xpp_inherit/ui/layout:include",
+    "//xpp/xlib:include",
+    "//xpp/ui/event:include",
+    "//xpp/ui/layout:include",
   ],
 )
 
@@ -34,8 +34,8 @@ cc_object (
     ":include",
   ],
   deps = [
-    "//xpp_inherit/xlib:xpp-xlib",
-    "//xpp_inherit/gfx:util",
-    "//xpp_inherit/ui/layout:layouts",
+    "//xpp/xlib:xpp-xlib",
+    "//xpp/gfx:util",
+    "//xpp/ui/layout:layouts",
   ],
 )

@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "xpp_inherit/gfx/coord.h"
-#include "xpp_inherit/gfx/rect.h"
+#include "xpp/gfx/coord.h"
+#include "xpp/gfx/rect.h"
 
 #include "xcolormap.h"
 #include "xdisplay.h"
