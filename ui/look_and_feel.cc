@@ -23,9 +23,6 @@ LookAndFeel::LookAndFeel() {
   SetColor("ButtonPressedBackground", gfx::Color::BLUE);
   SetColor("ButtonPressedShadow", gfx::Color::GRAY2);
   SetColor("ButtonPressedBorder", gfx::Color::GRAY5);
-
-
-
 }
 
 XColor LookAndFeel::GetXColor(std::shared_ptr<xlib::XColorMap> colormap,

@@ -4,8 +4,7 @@
 
 namespace xpp::ui {
 
-class FillLayout : public Layout {
- public:
+class PanelLayout : public Layout {
   virtual std::vector<xpp::ui::Layout::Position> DoLayout(
       std::vector<std::tuple<std::unique_ptr<XComponent>, int32_t>>& entries,
       gfx::Rect size) override;

@@ -19,7 +19,7 @@ class Layout {
   };
 
   virtual std::vector<Position> DoLayout(
-      std::vector<std::unique_ptr<XComponent>>& entries,
+      std::vector<std::tuple<std::unique_ptr<XComponent>, int32_t>>& entries,
       gfx::Rect size) = 0;
 };
 

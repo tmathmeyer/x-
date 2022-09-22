@@ -35,6 +35,7 @@ class XWindow : public XContainer {
     kDoesNotMatter = kTopLeft,
   };
 
+  LookAndFeel* GetLookAndFeel() const;
   void SetVisible(bool visibility);
   static std::unique_ptr<XWindow> Create();
   static std::unique_ptr<XWindow> Create(WindowType,

@@ -11,6 +11,7 @@ class XContainer : public XComponent {
  public:
   XContainer();
 
+  virtual void AddComponent(std::unique_ptr<XComponent> component, int32_t key);
   virtual void AddComponent(std::unique_ptr<XComponent> component);
   virtual void RemoveComponent(XComponent*);
   virtual void RemoveAll();
@@ -31,7 +32,7 @@ class XContainer : public XComponent {
   virtual void WheelScrolled(MouseWheelEvent*) override;
 
  protected:
-  std::vector<std::unique_ptr<XComponent>> components_;
+  std::vector<std::tuple<std::unique_ptr<XComponent>, int32_t>> components_;
   std::unique_ptr<Layout> layout_;
 
   std::vector<std::shared_ptr<ContainerListener>> container_listeners_;

@@ -66,6 +66,11 @@ XWindow::XWindow() : XContainer() {
 
 XWindow::~XWindow() {}
 
+
+LookAndFeel* XWindow::GetLookAndFeel() const {
+  return laf_.get();
+}
+
 std::unique_ptr<XWindow> XWindow::Create(WindowType type,
                                          PositionPin position,
                                          gfx::Rect size,

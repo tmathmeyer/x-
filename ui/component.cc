@@ -37,17 +37,6 @@ void XComponent::SetParent(XContainer* parent) {
 
 void XComponent::Paint(Graphics* g) {
   // do nothing!
-  /*
-  gfx::Rect size = g->GetDimensions();
-  printf("component size = {%i,%i}\n", size.width, size.height);
-  g->DrawRect({10, 10}, {size.width - 20, size.height - 20});
-  g->SetColor("PanelBackground");
-  g->FillRect({20, 3}, {120, 14});
-  g->SetColor(gfx::Color::WHITE);
-  g->SetFontSize(4);
-  g->DrawText({20, 0}, "XComponent");
-  g->SetFontSize(10);
-  */
 }
 
 const XContainer* XComponent::GetParent() const {
@@ -152,7 +141,5 @@ void XComponent::WheelScrolled(MouseWheelEvent* event) {
     listener->WheelScrolled(event);
   }
 }
-
-
 
 }  // namespace xpp::ui

@@ -10,9 +10,19 @@ namespace xpp::ui {
 XContainer::XContainer()
     : XComponent(), layout_(std::make_unique<FillLayout>()) {}
 
+void XContainer::AddComponent(std::unique_ptr<XComponent> component,
+                              int32_t key) {
+  component->SetParent(this);
+  auto packed = std::make_tuple<std::unique_ptr<XComponent>, int32_t>(
+      std::move(component), std::move(key));
+  components_.push_back(std::move(packed));
+}
+
 void XContainer::AddComponent(std::unique_ptr<XComponent> component) {
   component->SetParent(this);
-  components_.push_back(std::move(component));
+  auto packed = std::make_tuple<std::unique_ptr<XComponent>, int32_t>(
+      std::move(component), 0);
+  components_.push_back(std::move(packed));
 }
 
 void XContainer::SetLayout(std::unique_ptr<Layout> layout) {
@@ -20,10 +30,11 @@ void XContainer::SetLayout(std::unique_ptr<Layout> layout) {
 }
 
 void XContainer::RemoveComponent(XComponent* to_remove) {
-  std::vector<std::unique_ptr<XComponent>> replacement;
-  for (std::unique_ptr<XComponent>& comp : components_) {
-    if (comp->GetName() == to_remove->GetName()) {
-      ContainerEvent event = {.parent = this, .child = std::move(comp)};
+  std::vector<std::tuple<std::unique_ptr<XComponent>, int32_t>> replacement;
+  for (auto& comp : components_) {
+    if (std::get<0>(comp)->GetName() == to_remove->GetName()) {
+      ContainerEvent event = {.parent = this,
+                              .child = std::move(std::get<0>(comp))};
       for (const auto& listener : container_listeners_)
         listener->ComponentRemoved(&event);
     } else {
@@ -34,8 +45,9 @@ void XContainer::RemoveComponent(XComponent* to_remove) {
 }
 
 void XContainer::RemoveAll() {
-  for (std::unique_ptr<XComponent>& comp : components_) {
-    ContainerEvent event = {.parent = this, .child = std::move(comp)};
+  for (auto& comp : components_) {
+    ContainerEvent event = {.parent = this,
+                            .child = std::move(std::get<0>(comp))};
     for (const auto& listener : container_listeners_)
       listener->ComponentRemoved(&event);
   }

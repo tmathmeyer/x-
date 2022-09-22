@@ -3,10 +3,10 @@
 namespace xpp::ui {
 
 std::vector<xpp::ui::Layout::Position> FillLayout::DoLayout(
-    std::vector<std::unique_ptr<XComponent>>& entries,
+    std::vector<std::tuple<std::unique_ptr<XComponent>, int32_t>>& entries,
     gfx::Rect size) {
   if (entries.size())
-    return {{entries[0].get(), {0, 0}, size}};
+    return {{std::get<0>(entries[0]).get(), {0, 0}, size}};
   return {};
 }
 
