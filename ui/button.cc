@@ -13,7 +13,7 @@ XButton::XButton(std::string content) : content_(content) {
 
 void XButton::Paint(xpp::ui::Graphics* g) {
   XComponent::Paint(g);
-  g->SetFontSize(8);
+  //g->SetFontSize(8);
 
   const char* background_color = "ButtonBackground";
   const char* text_color = "ButtonTextColor";

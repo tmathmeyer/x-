@@ -4,7 +4,7 @@
 
 namespace xpp::ui {
 
-XPanel::XPanel() {
+XPanel::XPanel() : XContainer() {
   SetLayout(std::make_unique<PanelLayout>());
 }
 

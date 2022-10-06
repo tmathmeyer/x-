@@ -5,11 +5,13 @@ cpp_header (
   srcs = [
     "button.h",
     "button_listener.h",
+    "canvas.h",
     "component.h",
     "container.h",
     "graphics.h",
     "look_and_feel.h",
     "panel.h",
+    "scroll_panel.h",
     "window.h",
   ],
   deps = [
@@ -23,11 +25,13 @@ cc_object (
   name = "xpp-uilib",
   srcs = [
     "button.cc",
+    "canvas.cc",
     "component.cc",
     "container.cc",
     "graphics.cc",
     "look_and_feel.cc",
     "panel.cc",
+    "scroll_panel.cc",
     "window.cc",
   ],
   includes = [

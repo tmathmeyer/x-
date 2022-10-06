@@ -31,7 +31,7 @@ class Font {
   std::string font_name_;
   uint16_t size_;
 
-  TextRenderingMode mode_;
+  TextRenderingMode mode_ = TextRenderingMode::kNone;
 
   XftDraw* xft_ctx_ = nullptr;
   XftFont* xft_font_ = nullptr;

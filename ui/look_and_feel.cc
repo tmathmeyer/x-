@@ -15,7 +15,7 @@ LookAndFeel::LookAndFeel() {
   SetColor("ButtonBorder", gfx::Color::GRAY5);
 
   SetColor("ButtonHoveredTextColor", gfx::Color::WHITE);
-  SetColor("ButtonHoveredBackground", gfx::Color::BLUE.Burn());
+  SetColor("ButtonHoveredBackground", gfx::Color::BLUE.Darker());
   SetColor("ButtonHoveredShadow", gfx::Color::GRAY2);
   SetColor("ButtonHoveredBorder", gfx::Color::GRAY5);
 
@@ -23,6 +23,12 @@ LookAndFeel::LookAndFeel() {
   SetColor("ButtonPressedBackground", gfx::Color::BLUE);
   SetColor("ButtonPressedShadow", gfx::Color::GRAY2);
   SetColor("ButtonPressedBorder", gfx::Color::GRAY5);
+
+  SetColor("ScrollbarTrackColor", gfx::Color::GRAY7);
+  SetColor("ScrollbarTrackBorderColor", gfx::Color::GRAY6);
+  SetColor("ScrollbarColor", gfx::Color::GRAY8);
+  SetColor("ScrollbarBorderColor", gfx::Color::GRAY4);
+  SetColor("ScrollbarHoveredColor", gfx::Color::GREEN);
 }
 
 XColor LookAndFeel::GetXColor(std::shared_ptr<xlib::XColorMap> colormap,
@@ -57,11 +63,15 @@ XftColor LookAndFeel::GetXFTColor(std::shared_ptr<xlib::XGraphics> gc,
 }
 
 gfx::Font LookAndFeel::AllocateFont(std::shared_ptr<xlib::XGraphics> gc,
-                                    std::string key,
                                     std::string name,
-                                    uint16_t size) {
-  auto itr = fonts_.find(key);
-  if (itr != fonts_.end())
+                                    uint16_t size,
+                                    FontCache* fonts) {
+  std::stringstream stream;
+  stream << name << "::" << size;
+  std::string key = stream.str();
+
+  auto itr = fonts->fonts.find(key);
+  if (itr != fonts->fonts.end())
     return itr->second;
 
   gfx::Font font;
@@ -70,7 +80,7 @@ gfx::Font LookAndFeel::AllocateFont(std::shared_ptr<xlib::XGraphics> gc,
   font.xfont_ = gc->XLoadQueryFont(name.c_str());
   if (font.xfont_) {
     font.mode_ = gfx::Font::TextRenderingMode::kXorg;
-    fonts_[key] = font;
+    fonts->fonts[key] = font;
     return font;
   }
 
@@ -79,11 +89,13 @@ gfx::Font LookAndFeel::AllocateFont(std::shared_ptr<xlib::XGraphics> gc,
   fontstr << name << ":size=" << size;
   font.xft_font_ = gc->XftFontOpenName(fontstr.str().c_str());
   if (font.xft_font_) {
-    if (!xft_ctx_)
-      xft_ctx_ = gc->XftDrawCreate();
-    if (xft_ctx_) {
+    if (!fonts->xft_ctx)
+      fonts->xft_ctx = gc->XftDrawCreate();
+    if (fonts->xft_ctx) {
       font.mode_ = gfx::Font::TextRenderingMode::kXFT;
-      fonts_[key] = font;
+      font.size_ = size;
+      font.font_name_ = name;
+      fonts->fonts[key] = font;
     }
     return font;
   }
@@ -94,18 +106,16 @@ gfx::Font LookAndFeel::AllocateFont(std::shared_ptr<xlib::XGraphics> gc,
 
 gfx::Font LookAndFeel::GetFont(std::shared_ptr<xlib::XGraphics> gc,
                                std::string name,
-                               gfx::Font existing) {
-  std::stringstream stream;
-  stream << name << "::" << existing.size_;
-  return AllocateFont(gc, stream.str(), name, existing.size_);
+                               gfx::Font existing,
+                               FontCache* fonts) {
+  return AllocateFont(gc, name, existing.size_, fonts);
 }
 
 gfx::Font LookAndFeel::GetFont(std::shared_ptr<xlib::XGraphics> gc,
                                uint16_t size,
-                               gfx::Font existing) {
-  std::stringstream stream;
-  stream << existing.font_name_ << "::" << size;
-  return AllocateFont(gc, stream.str(), existing.font_name_, size);
+                               gfx::Font existing,
+                               FontCache* fonts) {
+  return AllocateFont(gc, existing.font_name_, size, fonts);
 }
 
 gfx::Color LookAndFeel::GetColorByName(std::string color) {

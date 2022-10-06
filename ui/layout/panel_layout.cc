@@ -19,9 +19,12 @@ std::vector<xpp::ui::Layout::Position> PanelLayout::DoLayout(
       tlc = tlc + gfx::Coord(0, pref->height);
       positions.push_back(pos);
     } else {
-      uint32_t wh = size.height / entries.size();
-      xpp::ui::Layout::Position pos = {comp.get(), tlc, {size.width, wh}};
-      tlc = tlc + gfx::Coord{0, wh};
+      uint32_t height = comp->GetPreferredHeight().value_or(
+        size.height / entries.size());
+      uint32_t width = comp->GetPreferredWidth().value_or(
+        size.width);
+      xpp::ui::Layout::Position pos = {comp.get(), tlc, {width, height}};
+      tlc = tlc + gfx::Coord{0, height};
       positions.push_back(pos);
     }
   }

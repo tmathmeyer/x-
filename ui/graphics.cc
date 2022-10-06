@@ -1,32 +1,47 @@
 #include "graphics.h"
 
+#include "../xlib/xpixmap.h"
+#include "canvas.h"
+
 namespace xpp::ui {
 
 Graphics::Graphics(std::shared_ptr<xlib::XGraphics> g,
                    std::shared_ptr<xlib::XColorMap> colormap,
                    std::shared_ptr<LookAndFeel> laf,
-                   gfx::Coord offset,
+                   std::shared_ptr<xlib::XWindow> window,
+                   uint32_t depth,
                    gfx::Rect size)
     : graphics_(std::move(g)),
       colormap_(std::move(colormap)),
       laf_(std::move(laf)),
-      offset_(offset),
-      size_(size) {}
+      window_(window),
+      depth_(depth),
+      size_(size),
+      offset_({0, 0}) {
+  fonts_ = std::make_shared<LookAndFeel::FontCache>();
+  SetFont(
+      laf_->AllocateFont(graphics_, "Fantasque Sans Mono", 10, fonts_.get()));
+}
 
 Graphics::Graphics(std::shared_ptr<xlib::XGraphics> g,
                    std::shared_ptr<xlib::XColorMap> colormap,
                    std::shared_ptr<LookAndFeel> laf,
-                   gfx::Color color,
-                   gfx::Font font,
+                   std::shared_ptr<xlib::XWindow> window,
+                   uint32_t depth,
+                   gfx::Rect size,
                    gfx::Coord offset,
-                   gfx::Rect size)
+                   std::shared_ptr<LookAndFeel::FontCache> fonts)
     : graphics_(std::move(g)),
       colormap_(std::move(colormap)),
       laf_(std::move(laf)),
-      color_(color),
-      font_(font),
-      offset_(offset),
-      size_(size) {}
+      window_(window),
+      fonts_(fonts),
+      depth_(depth),
+      size_(size),
+      offset_(offset) {
+  SetFont(
+      laf_->AllocateFont(graphics_, "Fantasque Sans Mono", 10, fonts_.get()));
+}
 
 void Graphics::SetColor(gfx::Color color) {
   color_ = color;
@@ -42,11 +57,11 @@ void Graphics::SetFont(gfx::Font font) {
 }
 
 void Graphics::SetFont(std::string fontname) {
-  font_ = laf_->GetFont(graphics_, fontname, font_);
+  font_ = laf_->GetFont(graphics_, fontname, font_, fonts_.get());
 }
 
 void Graphics::SetFontSize(uint16_t fontsize) {
-  font_ = laf_->GetFont(graphics_, fontsize, font_);
+  font_ = laf_->GetFont(graphics_, fontsize, font_, fonts_.get());
 }
 
 gfx::Rect Graphics::GetDimensions() const {
@@ -55,6 +70,14 @@ gfx::Rect Graphics::GetDimensions() const {
 
 uint32_t Graphics::GetFontHeight() const {
   return font_.Height();
+}
+
+std::unique_ptr<XCanvas> Graphics::CreateCanvas(gfx::Rect size) const {
+  std::shared_ptr<xlib::XPixmap> pixmap =
+      window_->XCreatePixmap(size.width, size.height, depth_);
+  Graphics graphics(pixmap->XCreateGC(colormap_), colormap_, laf_, window_,
+                    depth_, size);
+  return std::make_unique<XCanvas>(std::move(pixmap), std::move(graphics));
 }
 
 void Graphics::FillRect(gfx::Coord at, gfx::Rect size) {
@@ -106,6 +129,11 @@ void Graphics::FillRoundedRect(gfx::Coord at, gfx::Rect size, uint32_t radius) {
                       180 * 64, 90 * 64);
 }
 
+void Graphics::CopyArea(std::shared_ptr<xlib::XDrawable> d, gfx::Coord at) {
+  graphics_->XCopyArea(d->Drawable(), at.x, at.y, size_.width, size_.height,
+                       offset_.x, offset_.y);
+}
+
 void Graphics::DrawText(gfx::Coord at, std::string message) {
   auto x = at.x + offset_.x;
   auto y = at.y + offset_.y;
@@ -118,11 +146,12 @@ void Graphics::DrawText(gfx::Coord at, std::string message) {
     case gfx::Font::TextRenderingMode::kXFT: {
       auto xft_color = laf_->GetXFTColor(graphics_, color_);
       XftDrawStringUtf8(
-          laf_->xft_ctx_, &xft_color, font_.xft_font_, x, y + font_.Height(),
+          fonts_->xft_ctx, &xft_color, font_.xft_font_, x, y + font_.Height(),
           (const unsigned char*)message.c_str(), message.length());
       return;
     }
     default: {
+      puts("No renderer");
       return;
     }
   }
@@ -146,7 +175,8 @@ Graphics Graphics::SubGraphics(gfx::Coord offset, gfx::Rect size) {
       std::min(size.height, max_height),
   };
 
-  return {graphics_, colormap_, laf_, color_, font_, new_offset, new_size};
+  return {graphics_, colormap_, laf_,       window_,
+          depth_,    new_size,  new_offset, fonts_};
 }
 
 }  // namespace xpp::ui

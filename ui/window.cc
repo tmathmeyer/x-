@@ -61,11 +61,11 @@ gfx::Coord GetMotionVector(unsigned int button) {
 
 XWindow::XWindow() : XContainer() {
   display_ = xlib::XDisplay::Create();
+  window_fonts_ = std::make_shared<LookAndFeel::FontCache>();
   root_ = display_->XRootWindow(display_->XDefaultScreen());
 }
 
 XWindow::~XWindow() {}
-
 
 LookAndFeel* XWindow::GetLookAndFeel() const {
   return laf_.get();
@@ -190,9 +190,8 @@ void XWindow::Repaint() {
     SetDimensions(dimensions_);
     // TODO: do we want a back-buffer for shrink-resizes?
   }
-  Graphics graphics(window_gc_, colormap_, laf_, {0, 0}, dimensions_);
-  graphics.SetFont(
-      laf_->AllocateFont(window_gc_, "default", "Fantasque Sans Mono", 10));
+  Graphics graphics(window_gc_, colormap_, laf_, window_, depth_, dimensions_,
+                    {0, 0}, window_fonts_);
   Paint(&graphics);
 }
 
@@ -206,7 +205,7 @@ void XWindow::RunEventLoop() {
 
   if (type_ == WindowType::kDesktopBackdrop ||
       type_ == WindowType::kDesktopDock) {
-    SetDimensions(dimensions_); 
+    SetDimensions(dimensions_);
     Repaint();
   }
 

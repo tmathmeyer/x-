@@ -166,10 +166,17 @@ class ColorImpl {
     return std::tie(H, S, L);
   }
 
-  ColorImpl Burn() const {
+  ColorImpl Darker(Float value = 0.9) const {
     auto hsl = GetHSL();
     return ColorImpl::HSL(std::get<0>(hsl), std::get<1>(hsl),
-                          std::get<2>(hsl) * 0.9);
+                          std::get<2>(hsl) * value);
+  }
+
+  ColorImpl Lighter(Float value = 0.9) const {
+    auto hsl = GetHSL();
+    Float lum = 1.0 - std::get<2>(hsl);
+    return ColorImpl::HSL(std::get<0>(hsl), std::get<1>(hsl),
+                          1.0 - (lum * value));
   }
 
   bool operator==(const ColorImpl& other) const {

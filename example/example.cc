@@ -1,6 +1,8 @@
 #include "../ui/panel.h"
 #include "../ui/window.h"
 #include "../ui/button.h"
+#include "../ui/scroll_panel.h"
+#include <sstream>
 
 
 class EventPrinter : public xpp::ui::MouseMotionListener,
@@ -40,8 +42,11 @@ class PurplePanel : public xpp::ui::XPanel {
     this->AddMouseMotionListener(printer);
     this->AddMouseListener(printer);
     this->AddMouseWheelListener(printer);
-    this->AddComponent(std::make_unique<xpp::ui::XButton>("Click Me!"));
-    this->AddComponent(std::make_unique<xpp::ui::XButton>("No, Me!"));
+    for (int i = 0; i < 20; i++) {
+      std::stringstream ss;
+      ss << "Very Long Text Button #" << i;
+      this->AddComponent(std::make_unique<xpp::ui::XButton>(ss.str()));
+    }
   }
 
   void Paint(xpp::ui::Graphics* g) override {
@@ -51,6 +56,12 @@ class PurplePanel : public xpp::ui::XPanel {
 
 int main() {
   auto window = xpp::ui::XWindow::Create();
-  window->AddComponent(std::make_unique<PurplePanel>());
+  auto scrollview = std::make_unique<xpp::ui::XScrollPanel>();
+  for (int i = 0; i < 20; i++) {
+    std::stringstream ss;
+    ss << "Very Long Text Button #" << i;
+    scrollview->AddComponent(std::make_unique<xpp::ui::XButton>(ss.str()));
+  }
+  window->AddComponent(std::move(scrollview));
   window->SetVisible(true);
 }

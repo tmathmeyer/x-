@@ -25,6 +25,8 @@ class XComponent {
   virtual void Repaint();
   virtual void SetDimensions(gfx::Rect size);
   virtual std::optional<gfx::Rect> GetPreferredSize() const;
+  virtual std::optional<uint32_t> GetPreferredWidth() const;
+  virtual std::optional<uint32_t> GetPreferredHeight() const;
 
   virtual void AddMouseMotionListener(std::shared_ptr<MouseMotionListener>);
   virtual void AddMouseListener(std::shared_ptr<MouseListener>);

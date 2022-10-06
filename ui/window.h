@@ -72,6 +72,7 @@ class XWindow : public XContainer {
   std::shared_ptr<xlib::XDisplay> display_;
   std::shared_ptr<xlib::XColorMap> colormap_;
   std::shared_ptr<xlib::XGraphics> window_gc_;
+  std::shared_ptr<LookAndFeel::FontCache> window_fonts_;
 };
 
 }  // namespace xpp::ui

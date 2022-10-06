@@ -36,7 +36,7 @@ void XComponent::SetParent(XContainer* parent) {
 }
 
 void XComponent::Paint(Graphics* g) {
-  // do nothing!
+  SetDimensions(g->GetDimensions());
 }
 
 const XContainer* XComponent::GetParent() const {
@@ -52,6 +52,20 @@ const gfx::Rect& XComponent::GetDimensions() const {
 }
 
 std::optional<gfx::Rect> XComponent::GetPreferredSize() const {
+  auto height = GetPreferredHeight();
+  if (!height.has_value())
+    return std::nullopt;
+  auto width = GetPreferredWidth();
+  if (!width.has_value())
+    return std::nullopt;
+  return gfx::Rect{*width, *height};
+}
+
+std::optional<uint32_t> XComponent::GetPreferredHeight() const {
+  return std::nullopt;
+}
+
+std::optional<uint32_t> XComponent::GetPreferredWidth() const {
   return std::nullopt;
 }
 

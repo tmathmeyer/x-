@@ -19,10 +19,7 @@ void XContainer::AddComponent(std::unique_ptr<XComponent> component,
 }
 
 void XContainer::AddComponent(std::unique_ptr<XComponent> component) {
-  component->SetParent(this);
-  auto packed = std::make_tuple<std::unique_ptr<XComponent>, int32_t>(
-      std::move(component), 0);
-  components_.push_back(std::move(packed));
+  AddComponent(std::move(component), 0);
 }
 
 void XContainer::SetLayout(std::unique_ptr<Layout> layout) {
