@@ -333,9 +333,19 @@ void XScrollPanel::AddComponentListener(
 void XScrollPanel::Scroll(gfx::Coord vec) {
   auto viewport_size = ViewportExtents();
   int64_t max_width = viewport_size.width;
-  max_width -= GetDimensions().width;
   int64_t max_height = viewport_size.height;
-  max_height -= GetDimensions().height;
+  int64_t canvas_width = GetDimensions().width;
+  int64_t canvas_height = GetDimensions().height;
+  if (canvas_width < max_width)
+    canvas_height -= 50;
+  if (canvas_height < max_height)
+    canvas_width -= 50;
+  if (canvas_width != GetDimensions().width)
+    if (canvas_width < max_width)
+      canvas_height -= 50;
+
+  max_width -= canvas_width;
+  max_height -= canvas_height;
   position_ = {std::max(0l, std::min(max_width, position_.x + vec.x)),
                std::max(0l, std::min(max_height, position_.y + vec.y))};
   Repaint();
