@@ -192,7 +192,9 @@ void XWindow::Repaint() {
   }
   Graphics graphics(window_gc_, colormap_, laf_, window_, depth_, dimensions_,
                     {0, 0}, window_fonts_);
-  Paint(&graphics);
+  auto canvas = graphics.CreateCanvas(dimensions_);
+  Paint(canvas->GetGraphics());
+  canvas->MapOnTo(&graphics, {0, 0});
 }
 
 void XWindow::RunEventLoop() {

@@ -7,6 +7,14 @@
 
 namespace xpp::ui {
 
+namespace {
+
+bool ZIndexSort(const Layout::Position& p1, const Layout::Position& p2) {
+  return p1.z_index < p2.z_index;
+}
+
+}  // namespace
+
 XContainer::XContainer()
     : XComponent(), layout_(std::make_unique<FillLayout>()) {}
 
@@ -58,7 +66,9 @@ void XContainer::AddComponentListener(
 
 void XContainer::Paint(Graphics* g) {
   XComponent::Paint(g);
-  for (auto position : layout_->DoLayout(components_, g->GetDimensions())) {
+  auto positions = layout_->DoLayout(components_, g->GetDimensions());
+  std::sort(positions.begin(), positions.end(), ZIndexSort);
+  for (auto position : positions) {
     Graphics sub = g->SubGraphics(position.at, position.size);
     position.component->Paint(&sub);
   }

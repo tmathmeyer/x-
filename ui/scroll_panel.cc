@@ -47,15 +47,25 @@ ScrollBar::ScrollBar(XScrollPanel* panel, ScrollBarTrack::Mode mode)
   this->AddMouseMotionListener(std::make_unique<ScrollBarMouseMotion>(this));
 }
 
+ScrollWheelListener::ScrollWheelListener(XScrollPanel* panel) : panel_(panel) {}
+
+void ScrollWheelListener::WheelScrolled(MouseWheelEvent* event) {
+  int32_t y_delta = -std::max(-2l, std::min(event->vector.y, 2l)) * 8;
+  int32_t x_delta = -std::max(-2l, std::min(event->vector.x, 2l)) * 8;
+  panel_->Scroll({x_delta, y_delta});
+  event->active = false;
+}
+
 void ScrollBar::Paint(Graphics* g) {
   XComponent::Paint(g);
   if (hovered_)
     g->SetColor("ScrollbarHoveredColor");
   else
     g->SetColor("ScrollbarColor");
-  g->FillRoundedRect({0, 0}, g->GetDimensions(), 4);
+
+  g->FillRoundedRect({0, 0}, g->GetDimensions(), 5);
   g->SetColor("ScrollbarBorderColor");
-  g->DrawRoundedRect({0, 0}, g->GetDimensions(), 4);
+  g->DrawRoundedRect({0, 0}, g->GetDimensions(), 5);
 }
 
 void ScrollBar::MouseEntered() {
@@ -75,16 +85,30 @@ void ScrollBar::Scroll(gfx::Coord vec) {
     panel_->Scroll({0, vec.y});
 }
 
-ScrollBarTrack::ScrollBarTrack(XScrollPanel* panel, Mode mode) : XContainer() {
+ScrollBarTrack::ScrollBarTrack(XScrollPanel* panel, Mode mode)
+    : XContainer(), mode_(mode) {
   this->SetLayout(std::make_unique<ScrollBarTrackLayout>(panel, mode));
   this->AddComponent(std::make_unique<ScrollBar>(panel, mode));
 }
 
 void ScrollBarTrack::Paint(Graphics* g) {
   g->SetColor("ScrollbarTrackColor");
-  g->FillRect({0, 0}, g->GetDimensions());
+  auto box_size = g->GetDimensions();
+  uint8_t width = 18;
+  gfx::Rect roundedsize = {0, 0};
+  uint8_t margin = 0;
+  if (mode_ == Mode::kVertical) {
+    margin = (box_size.width - width) / 2;
+    roundedsize = {width, box_size.height - margin * 2};
+  } else {
+    margin = (box_size.height - width) / 2;
+    roundedsize = {box_size.width - margin * 2, width};
+  }
+
+  g->FillRoundedRect({margin, margin}, roundedsize, 5);
+
   g->SetColor("ScrollbarTrackBorderColor");
-  g->FillRect({0, 0}, {2, g->GetDimensions().height});
+  g->DrawRoundedRect({margin, margin}, roundedsize, 5);
   XContainer::Paint(g);
 }
 
@@ -99,36 +123,54 @@ std::vector<Layout::Position> ScrollBarTrackLayout::DoLayout(
   if (entries.size() != 1)
     return result;
 
-  int32_t bar_padding_end = 5;
-  int32_t bar_padding_side = 5;
+  // Get the margins of the bar, assuming it has a fixed thickness.
+  int32_t bar_thickness = 18;
+  int32_t track_true_thickness =
+      mode_ == ScrollBarTrack::kHorizontal ? size.height : size.width;
+  int32_t scroll_bar_margins = (track_true_thickness - bar_thickness) / 2;
 
+  // Full track length, which is useful to see what amount of the underlying
+  // viewport is actuall in view.
+  int32_t full_scroll_track_length =
+      mode_ == ScrollBarTrack::kHorizontal ? size.width : size.height;
+
+  // Get the dimension of the viewport that we're scolling in.
   auto viewport_true_size = panel_->ViewportExtents();
-  auto viewport_real_size = panel_->GetDimensions();
+  int32_t viewport_relevant_dimension = mode_ == ScrollBarTrack::kHorizontal
+                                            ? viewport_true_size.width
+                                            : viewport_true_size.height;
 
-  auto shared_den =
-      (mode_ == ScrollBarTrack::kHorizontal ? viewport_true_size.width
-                                            : viewport_true_size.height);
-  auto size_num =
-      (mode_ == ScrollBarTrack::kHorizontal ? viewport_real_size.width
-                                            : viewport_real_size.height) -
-      (bar_padding_end * 2);
-  auto position_num =
-      (mode_ == ScrollBarTrack::kHorizontal ? panel_->ScrollPosition().x
-                                            : panel_->ScrollPosition().y) -
-      bar_padding_end;
+  // How long the track is once you remove the top/bottom or left/right margins.
+  int32_t scroll_track_length =
+      full_scroll_track_length - scroll_bar_margins * 2;
 
-  auto bar_length = (size_num * size_num) / shared_den;
-  auto position = (position_num * size_num) / shared_den;
-  auto bar_width = size.width - (bar_padding_side * 2);
+  // scrollbar length is (frame_dim / viewport_dim) * track_len.
+  // (frame_dim / viewport_dim) is always >0 and <1.
+  int32_t scroll_bar_length = (scroll_track_length * full_scroll_track_length) /
+                              viewport_relevant_dimension;
+
+  // scroll length is when top is at top, to when bottom is at bottom, aka top
+  // is |scroll_bar_length| away from bottom.
+  int32_t scroll_range = scroll_track_length - scroll_bar_length;
+
+  // get how far along the scrolling is
+  int32_t position_value = mode_ == ScrollBarTrack::kHorizontal
+                               ? panel_->ScrollPosition().x
+                               : panel_->ScrollPosition().y;
+
+  // Get the scroll position away from the start.
+  int32_t scroll_bar_location =
+      ((scroll_track_length * position_value) / viewport_relevant_dimension) +
+      scroll_bar_margins;
 
   if (mode_ == ScrollBarTrack::kVertical) {
     result.push_back({std::get<0>(entries[0]).get(),
-                      {bar_padding_side, position + bar_padding_end},
-                      {bar_width, bar_length}});
+                      {scroll_bar_margins, scroll_bar_location},
+                      {bar_thickness, scroll_bar_length}});
   } else {
     result.push_back({std::get<0>(entries[0]).get(),
-                      {position + bar_padding_end, bar_padding_side},
-                      {bar_length, bar_width}});
+                      {scroll_bar_location, scroll_bar_margins},
+                      {scroll_bar_length, bar_thickness}});
   }
 
   return result;
@@ -141,6 +183,7 @@ std::vector<Layout::Position> ScrollPanelLayout::DoLayout(
     std::vector<std::tuple<std::unique_ptr<XComponent>, int32_t>>& entries,
     gfx::Rect size) {
   std::vector<Layout::Position> result;
+  CHECK(entries.size() == 3);
 
   gfx::Rect viewport_extent = panel_->ViewportExtents();
   gfx::Rect viewport_size = size;
@@ -162,7 +205,8 @@ std::vector<Layout::Position> ScrollPanelLayout::DoLayout(
         if (barwidth) {
           result.push_back({comp.get(),
                             {viewport_size.width, 0},
-                            {barwidth, viewport_size.height}});
+                            {barwidth, viewport_size.height},
+                            1});
         }
         break;
       }
@@ -170,11 +214,13 @@ std::vector<Layout::Position> ScrollPanelLayout::DoLayout(
         if (barheight) {
           result.push_back({comp.get(),
                             {0, viewport_size.height},
-                            {viewport_size.width, barheight}});
+                            {viewport_size.width, barheight},
+                            1});
         }
         break;
       }
       case XScrollPanel::ComponentUsage::kViewport: {
+        viewport_size = {size.width + barwidth, size.height + barheight};
         result.push_back({comp.get(), {0, 0}, viewport_size});
         break;
       }
@@ -227,6 +273,7 @@ void ScrollPanelViewport::Paint(Graphics* g) {
 }  // namespace internal
 
 XScrollPanel::XScrollPanel() : XPanel() {
+  AddMouseWheelListener(std::make_unique<internal::ScrollWheelListener>(this));
   layout_ = std::make_unique<internal::ScrollPanelLayout>(this);
 
   auto v_track = std::make_unique<internal::ScrollBarTrack>(

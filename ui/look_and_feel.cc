@@ -24,11 +24,11 @@ LookAndFeel::LookAndFeel() {
   SetColor("ButtonPressedShadow", gfx::Color::GRAY2);
   SetColor("ButtonPressedBorder", gfx::Color::GRAY5);
 
-  SetColor("ScrollbarTrackColor", gfx::Color::GRAY7);
+  SetColor("ScrollbarTrackColor", gfx::Color::GRAY6);
   SetColor("ScrollbarTrackBorderColor", gfx::Color::GRAY6);
-  SetColor("ScrollbarColor", gfx::Color::GRAY8);
+  SetColor("ScrollbarColor", gfx::Color::GRAY2);
   SetColor("ScrollbarBorderColor", gfx::Color::GRAY4);
-  SetColor("ScrollbarHoveredColor", gfx::Color::GREEN);
+  SetColor("ScrollbarHoveredColor", gfx::Color::BLUE);
 }
 
 XColor LookAndFeel::GetXColor(std::shared_ptr<xlib::XColorMap> colormap,

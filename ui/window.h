@@ -1,5 +1,6 @@
 #pragma once
 
+#include "canvas.h"
 #include "container.h"
 #include "look_and_feel.h"
 

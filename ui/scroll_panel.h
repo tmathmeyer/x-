@@ -20,11 +20,11 @@ class ScrollPanelViewport : public XPanel {
 
 class ScrollBarTrack : public XContainer {
  public:
-  enum Mode {
-    kVertical, kHorizontal
-  };
+  enum Mode { kVertical, kHorizontal };
   ScrollBarTrack(XScrollPanel* panel, Mode mode);
   void Paint(Graphics* g) override;
+ private:
+  Mode mode_;
 };
 
 class ScrollBar : public XComponent {
@@ -76,6 +76,15 @@ class ScrollBarMouseMotion : public MouseMotionListener {
   ScrollBar* scrollbar_;
 };
 
+class ScrollWheelListener : public MouseWheelListener {
+ public:
+  ScrollWheelListener(XScrollPanel* panel);
+  virtual void WheelScrolled(MouseWheelEvent*) override;
+
+ private:
+  XScrollPanel* panel_;
+};
+
 }  // namespace internal
 
 class XScrollPanel : public XPanel {
@@ -102,6 +111,7 @@ class XScrollPanel : public XPanel {
   friend class internal::ScrollBarTrackLayout;
   friend class internal::ScrollPanelViewport;
   friend class internal::ScrollBar;
+  friend class internal::ScrollWheelListener;
 
   gfx::Rect ViewportExtents();
   gfx::Coord ScrollPosition();
