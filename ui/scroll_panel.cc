@@ -50,8 +50,8 @@ ScrollBar::ScrollBar(XScrollPanel* panel, ScrollBarTrack::Mode mode)
 ScrollWheelListener::ScrollWheelListener(XScrollPanel* panel) : panel_(panel) {}
 
 void ScrollWheelListener::WheelScrolled(MouseWheelEvent* event) {
-  int32_t y_delta = -std::max(-2l, std::min(event->vector.y, 2l)) * 8;
-  int32_t x_delta = -std::max(-2l, std::min(event->vector.x, 2l)) * 8;
+  int32_t y_delta = -std::max(-2l, std::min(event->vector.y, 2l)) * 16;
+  int32_t x_delta = -std::max(-2l, std::min(event->vector.x, 2l)) * 16;
   panel_->Scroll({x_delta, y_delta});
   event->active = false;
 }
@@ -269,6 +269,64 @@ void ScrollPanelViewport::Paint(Graphics* g) {
   // Let the canvas write itself into our graphics object
   canvas->MapOnTo(g, panel_->ScrollPosition());
 }
+
+gfx::Coord ScrollPanelViewport::FixLocation(gfx::Coord loc) {
+  return loc + panel_->ScrollPosition();
+}
+
+void ScrollPanelViewport::MouseEntered(MouseMotionEvent* event) {
+  MouseMotionEvent copy = {FixLocation(event->location),
+                           FixLocation(event->previous_location),
+                           event->component, event->mouse_button};
+  XPanel::MouseEntered(&copy);
+  event->active = copy.active;
+}
+
+void ScrollPanelViewport::MouseExited(MouseMotionEvent* event) {
+  MouseMotionEvent copy = {FixLocation(event->location),
+                           FixLocation(event->previous_location),
+                           event->component, event->mouse_button};
+  XPanel::MouseExited(&copy);
+  event->active = copy.active;
+}
+
+void ScrollPanelViewport::MouseMoved(MouseMotionEvent* event) {
+  MouseMotionEvent copy = {FixLocation(event->location),
+                           FixLocation(event->previous_location),
+                           event->component, event->mouse_button};
+  XPanel::MouseMoved(&copy);
+  event->active = copy.active;
+}
+
+void ScrollPanelViewport::MouseDragged(MouseMotionEvent* event) {
+  MouseMotionEvent copy = {FixLocation(event->location),
+                           FixLocation(event->previous_location),
+                           event->component, event->mouse_button};
+  XPanel::MouseDragged(&copy);
+  event->active = copy.active;
+}
+
+void ScrollPanelViewport::MousePressed(MouseEvent* event) {
+  MouseEvent copy = {FixLocation(event->location), event->mouse_button,
+                     event->component};
+  XPanel::MousePressed(&copy);
+  event->active = copy.active;
+}
+
+void ScrollPanelViewport::MouseClicked(MouseEvent* event) {
+  MouseEvent copy = {FixLocation(event->location), event->mouse_button,
+                     event->component};
+  XPanel::MouseClicked(&copy);
+  event->active = copy.active;
+}
+
+void ScrollPanelViewport::MouseReleased(MouseEvent* event) {
+  MouseEvent copy = {FixLocation(event->location), event->mouse_button,
+                     event->component};
+  XPanel::MouseReleased(&copy);
+  event->active = copy.active;
+}
+
 
 }  // namespace internal
 

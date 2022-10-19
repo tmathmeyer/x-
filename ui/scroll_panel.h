@@ -14,8 +14,18 @@ class ScrollPanelViewport : public XPanel {
   void Paint(Graphics* g) override;
   gfx::Rect GetCanvasSize(gfx::Rect size) const;
 
+  virtual void MouseEntered(MouseMotionEvent*) override;
+  virtual void MouseExited(MouseMotionEvent*) override;
+  virtual void MouseMoved(MouseMotionEvent*) override;
+  virtual void MouseDragged(MouseMotionEvent*) override;
+  virtual void MousePressed(MouseEvent*) override;
+  virtual void MouseClicked(MouseEvent*) override;
+  virtual void MouseReleased(MouseEvent*) override;
+
  private:
   XScrollPanel* panel_;
+  
+  gfx::Coord FixLocation(gfx::Coord loc);
 };
 
 class ScrollBarTrack : public XContainer {
@@ -23,6 +33,7 @@ class ScrollBarTrack : public XContainer {
   enum Mode { kVertical, kHorizontal };
   ScrollBarTrack(XScrollPanel* panel, Mode mode);
   void Paint(Graphics* g) override;
+
  private:
   Mode mode_;
 };
