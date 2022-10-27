@@ -11,6 +11,7 @@ class XContainer : public XComponent {
  public:
   using ComponentStorageType = std::tuple<std::unique_ptr<XComponent>, int32_t>;
   XContainer();
+  virtual ~XContainer() override = default;
 
   virtual void AddComponent(std::unique_ptr<XComponent> component, int32_t key);
   virtual void AddComponent(std::unique_ptr<XComponent> component);

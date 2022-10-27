@@ -36,6 +36,17 @@ LookAndFeel::LookAndFeel() {
   SetColor("AccordionHeaderTextColorClosed", gfx::Color::GRAY1);
 }
 
+LookAndFeel::FontCache::FontCache(std::shared_ptr<xlib::XGraphics> gc)
+    : gc_(gc) {}
+
+LookAndFeel::FontCache::~FontCache() {
+  if (xft_ctx)
+    XftDrawDestroy(xft_ctx);
+  for (auto& [_, font] : std::move(fonts)) {
+    font.DeleteEarly(gc_.get());
+  }
+}
+
 XColor LookAndFeel::GetXColor(std::shared_ptr<xlib::XColorMap> colormap,
                               gfx::Color color) {
   auto itr = xcolors_.find(color);
@@ -93,6 +104,7 @@ gfx::Font LookAndFeel::AllocateFont(std::shared_ptr<xlib::XGraphics> gc,
   std::stringstream fontstr;
   fontstr << name << ":size=" << size;
   font.xft_font_ = gc->XftFontOpenName(fontstr.str().c_str());
+
   if (font.xft_font_) {
     if (!fonts->xft_ctx)
       fonts->xft_ctx = gc->XftDrawCreate();

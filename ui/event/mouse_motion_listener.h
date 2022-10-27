@@ -8,8 +8,8 @@ namespace xpp::ui {
 class XComponent;
 
 struct MouseMotionEvent {
-  gfx::Coord location;
-  gfx::Coord previous_location;
+  gfx::Coord location = {0, 0};
+  gfx::Coord previous_location = {0, 0};
   XComponent* component;
   int mouse_button = 0;
   bool active = true;

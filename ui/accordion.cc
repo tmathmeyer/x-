@@ -34,7 +34,7 @@ class AccordionLayout : public Layout {
       }
     }
     if (body && parent_->IsOpen()) {
-      gfx::Rect leftover = size - gfx::Rect{tlc.x, tlc.y};
+      gfx::Rect leftover = {size.width, std::max(0l, size.height - tlc.y)};
       auto body_size = body->GetPreferredSize().value_or(leftover);
       positions.push_back({body, tlc, body_size});
     }

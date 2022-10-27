@@ -1,10 +1,10 @@
 #pragma once
 
+#include "font.h"
 #include "look_and_feel.h"
 
 #include "../gfx/color.h"
 #include "../gfx/coord.h"
-#include "../gfx/font.h"
 #include "../gfx/rect.h"
 #include "../xlib/xgraphics.h"
 
@@ -20,7 +20,7 @@ class Graphics {
            std::shared_ptr<xlib::XWindow>,
            uint32_t depth,
            gfx::Rect size);
-  
+
   Graphics(std::shared_ptr<xlib::XGraphics>,
            std::shared_ptr<xlib::XColorMap>,
            std::shared_ptr<LookAndFeel>,

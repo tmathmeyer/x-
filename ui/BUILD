@@ -9,6 +9,7 @@ cpp_header (
     "canvas.h",
     "component.h",
     "container.h",
+    "font.h",
     "graphics.h",
     "look_and_feel.h",
     "panel.h",

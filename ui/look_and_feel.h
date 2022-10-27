@@ -4,9 +4,8 @@
 #include <memory>
 
 #include "../gfx/color.h"
-#include "../gfx/font.h"
-
 #include "../xlib/xgraphics.h"
+#include "font.h"
 
 namespace xpp::ui {
 
@@ -16,9 +15,16 @@ class LookAndFeel {
  public:
   const gfx::Color PanelBackground = gfx::Color::GRAY8;
 
-  struct FontCache {
+  class FontCache {
+   public:
+    FontCache(std::shared_ptr<xlib::XGraphics> gc);
+    ~FontCache();
+
     std::map<std::string, gfx::Font> fonts;
-    XftDraw* xft_ctx;
+    XftDraw* xft_ctx = nullptr;
+
+   private:
+    std::shared_ptr<xlib::XGraphics> gc_;
   };
 
  public:

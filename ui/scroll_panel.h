@@ -107,6 +107,7 @@ class XScrollPanel : public XPanel {
   };
 
   XScrollPanel();
+  ~XScrollPanel() override = default;
 
   virtual void AddComponent(std::unique_ptr<XComponent> component,
                             int32_t key) override;

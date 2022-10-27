@@ -5,7 +5,6 @@ cpp_header (
   srcs = [
     "color.h",
     "coord.h",
-    "font.h",
     "rect.h",
     "util.h",
   ],

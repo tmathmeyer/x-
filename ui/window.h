@@ -62,6 +62,9 @@ class XWindow : public XContainer, public WindowInterface {
 
   bool is_shown_ = false;
   bool request_hide_flag_ = false;
+  bool executing_ = true;
+  bool wants_exit_ = false;
+
   PositionPin position_pin_ = PositionPin::kDoesNotMatter;
   WindowType type_ = WindowType::kNormal;
   gfx::Coord preferred_position_ = {0, 0};

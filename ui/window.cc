@@ -61,7 +61,6 @@ gfx::Coord GetMotionVector(unsigned int button) {
 
 XWindow::XWindow() : XContainer() {
   display_ = xlib::XDisplay::Create();
-  window_fonts_ = std::make_shared<LookAndFeel::FontCache>();
   root_ = display_->XRootWindow(display_->XDefaultScreen());
 }
 
@@ -76,7 +75,8 @@ WindowInterface* XWindow::Window() const {
 }
 
 void XWindow::Close() {
-  request_hide_flag_ = true;
+  wants_exit_ = true;
+  SetVisible(false);
 }
 
 std::unique_ptr<XWindow> XWindow::Create(WindowType type,
@@ -169,6 +169,7 @@ bool XWindow::Initialize(WindowType mode,
                            (unsigned char*)&type, 1);
 
   window_gc_ = window_->XCreateGC(colormap_);
+  window_fonts_ = std::make_shared<LookAndFeel::FontCache>(window_gc_);
   depth_ = vinfo.depth;
   return true;
 }
@@ -222,7 +223,12 @@ void XWindow::RunEventLoop() {
   Atom wmDeleteMessage = display_->XInternAtom("WM_DELETE_WINDOW", False);
   window_->XSetWMProtocols(&wmDeleteMessage, 1);
 
-  while (!request_hide_flag_) {
+  while (executing_) {
+    if (wants_exit_) {
+      executing_ = false;
+      RemoveAll();
+    }
+
     display_->XNextEvent(&event);
     if (request_hide_flag_)
       break;

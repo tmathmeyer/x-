@@ -18,7 +18,7 @@ Graphics::Graphics(std::shared_ptr<xlib::XGraphics> g,
       depth_(depth),
       size_(size),
       offset_({0, 0}) {
-  fonts_ = std::make_shared<LookAndFeel::FontCache>();
+  fonts_ = std::make_shared<LookAndFeel::FontCache>(graphics_);
   SetFont(
       laf_->AllocateFont(graphics_, "Fantasque Sans Mono", 10, fonts_.get()));
 }

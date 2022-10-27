@@ -128,7 +128,7 @@ void XContainer::MouseMoved(MouseMotionEvent* event) {
       }
       if (!moved) {
         moved = true;
-        copy.previous_location = *prev;
+        copy.previous_location = prev.value_or(gfx::Coord{0, 0});
         position.component->MouseMoved(&copy);
         event->active = copy.active;
       }

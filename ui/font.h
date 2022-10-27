@@ -4,10 +4,12 @@
 #include <X11/Xlib.h>
 #include <string>
 
+#include "../xlib/xgraphics.h"
+
 namespace xpp::ui {
 class LookAndFeel;
 class Graphics;
-}
+}  // namespace xpp::ui
 
 namespace xpp::gfx {
 
@@ -22,6 +24,12 @@ class Font {
       default:
         return 0;
     }
+  }
+
+  void DeleteEarly(xlib::XGraphics* gfx) {
+    // Not responsible for deleting the xft context!
+    if (xft_font_)
+      gfx->XftFontClose(xft_font_);
   }
 
  private:

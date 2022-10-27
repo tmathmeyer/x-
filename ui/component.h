@@ -16,6 +16,7 @@ class XContainer;
 class XComponent {
  public:
   XComponent();
+  virtual ~XComponent() = default;
 
   virtual void Paint(Graphics* g);
 
