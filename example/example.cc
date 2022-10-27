@@ -1,37 +1,37 @@
-#include "../ui/panel.h"
-#include "../ui/window.h"
-#include "../ui/button.h"
-#include "../ui/scroll_panel.h"
 #include <sstream>
-
+#include "../ui/button.h"
+#include "../ui/panel.h"
+#include "../ui/scroll_panel.h"
+#include "../ui/accordion.h"
+#include "../ui/window.h"
 
 class EventPrinter : public xpp::ui::MouseMotionListener,
                      public xpp::ui::MouseListener,
                      public xpp::ui::MouseWheelListener {
  public:
   void MouseEntered(xpp::ui::MouseMotionEvent*) {
-    //puts("MouseEntered!");
+    // puts("MouseEntered!");
   }
   void MouseExited(xpp::ui::MouseMotionEvent*) {
-    //puts("MouseExited!");
+    // puts("MouseExited!");
   }
   void MouseMoved(xpp::ui::MouseMotionEvent*) {
     // puts("MouseMoved!");
   }
   void MouseDragged(xpp::ui::MouseMotionEvent*) {
-    //puts("MouseDragged!");
+    // puts("MouseDragged!");
   }
   void MouseClicked(xpp::ui::MouseEvent*) {
-    //puts("MouseClick");
+    // puts("MouseClick");
   }
   void MousePressed(xpp::ui::MouseEvent*) {
-    //puts("MousePress");
+    // puts("MousePress");
   }
   void MouseReleased(xpp::ui::MouseEvent*) {
-    //puts("MouseRelease");
+    // puts("MouseRelease");
   }
   void WheelScrolled(xpp::ui::MouseWheelEvent*) {
-    //puts("WheelScroll");
+    // puts("WheelScroll");
   }
 };
 
@@ -49,19 +49,20 @@ class PurplePanel : public xpp::ui::XPanel {
     }
   }
 
-  void Paint(xpp::ui::Graphics* g) override {
-    xpp::ui::XPanel::Paint(g);
-  }
+  void Paint(xpp::ui::Graphics* g) override { xpp::ui::XPanel::Paint(g); }
 };
 
 int main() {
   auto window = xpp::ui::XWindow::Create();
-  auto scrollview = std::make_unique<xpp::ui::XScrollPanel>();
+  auto default_component = std::make_unique<xpp::ui::XAccordion>("Click Me");
+  auto scrollpanel = std::make_unique<xpp::ui::XScrollPanel>();
   for (int i = 0; i < 20; i++) {
     std::stringstream ss;
     ss << "Very Long Text Button #" << i;
-    scrollview->AddComponent(std::make_unique<xpp::ui::XButton>(ss.str()));
+    scrollpanel->AddComponent(
+        std::make_unique<xpp::ui::XButton>(ss.str()));
   }
-  window->AddComponent(std::move(scrollview));
+  default_component->AddComponent(std::move(scrollpanel));
+  window->AddComponent(std::move(default_component));
   window->SetVisible(true);
 }

@@ -3,13 +3,14 @@
 #include "canvas.h"
 #include "container.h"
 #include "look_and_feel.h"
+#include "window_interface.h"
 
 #include "../xlib/xdisplay.h"
 #include "../xlib/xwindow.h"
 
 namespace xpp::ui {
 
-class XWindow : public XContainer {
+class XWindow : public XContainer, public WindowInterface {
  public:
   ~XWindow();
 
@@ -36,16 +37,20 @@ class XWindow : public XContainer {
     kDoesNotMatter = kTopLeft,
   };
 
-  LookAndFeel* GetLookAndFeel() const;
+  // XContainer overrides
+  void Repaint() override;
   void SetVisible(bool visibility);
+  LookAndFeel* GetLookAndFeel() const;
+  WindowInterface* Window() const override;
+
+  // WindowInterface overrides
+  void Close() override;
+
   static std::unique_ptr<XWindow> Create();
   static std::unique_ptr<XWindow> Create(WindowType,
                                          PositionPin,
                                          gfx::Rect,
                                          gfx::Coord);
-
-
-  void Repaint() override;
 
  private:
   XWindow();

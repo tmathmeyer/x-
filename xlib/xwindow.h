@@ -54,6 +54,7 @@ class XWindow : public XDrawable {
   NO_CONVERSIONS(XMoveWindow, void);
   NO_CONVERSIONS(XMoveResizeWindow, void);
   NO_CONVERSIONS(XChangeProperty, int);
+  NO_CONVERSIONS(XSetWMProtocols, void);
 
   ::Window operator*();
   ::Drawable Drawable() override;

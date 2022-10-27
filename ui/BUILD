@@ -3,6 +3,7 @@ langs("C")
 cpp_header (
   name = "include",
   srcs = [
+    "accordion.h",
     "button.h",
     "button_listener.h",
     "canvas.h",
@@ -13,6 +14,7 @@ cpp_header (
     "panel.h",
     "scroll_panel.h",
     "window.h",
+    "window_interface.h",
   ],
   deps = [
     "//xpp/xlib:include",
@@ -24,6 +26,7 @@ cpp_header (
 cc_object (
   name = "xpp-uilib",
   srcs = [
+    "accordion.cc",
     "button.cc",
     "canvas.cc",
     "component.cc",

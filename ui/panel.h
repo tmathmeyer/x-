@@ -8,6 +8,7 @@ class XPanel : public XContainer {
  public:
   XPanel();
   void Paint(xpp::ui::Graphics* g) override;
+  gfx::Rect CalculatePreferredSize() const;
 };
 
 }  // namespace xpp::ui

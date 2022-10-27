@@ -71,6 +71,14 @@ LookAndFeel* XWindow::GetLookAndFeel() const {
   return laf_.get();
 }
 
+WindowInterface* XWindow::Window() const {
+  return const_cast<XWindow*>(this);
+}
+
+void XWindow::Close() {
+  request_hide_flag_ = true;
+}
+
 std::unique_ptr<XWindow> XWindow::Create(WindowType type,
                                          PositionPin position,
                                          gfx::Rect size,
@@ -210,6 +218,9 @@ void XWindow::RunEventLoop() {
     SetDimensions(dimensions_);
     Repaint();
   }
+
+  Atom wmDeleteMessage = display_->XInternAtom("WM_DELETE_WINDOW", False);
+  window_->XSetWMProtocols(&wmDeleteMessage, 1);
 
   while (!request_hide_flag_) {
     display_->XNextEvent(&event);

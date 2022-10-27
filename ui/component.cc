@@ -43,6 +43,10 @@ const XContainer* XComponent::GetParent() const {
   return parent_;
 }
 
+WindowInterface* XComponent::Window() const {
+  return parent_ ? parent_->Window() : nullptr;
+}
+
 const std::string& XComponent::GetName() const {
   return uuid_;
 }

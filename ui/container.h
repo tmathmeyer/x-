@@ -9,6 +9,7 @@ namespace xpp::ui {
 
 class XContainer : public XComponent {
  public:
+  using ComponentStorageType = std::tuple<std::unique_ptr<XComponent>, int32_t>;
   XContainer();
 
   virtual void AddComponent(std::unique_ptr<XComponent> component, int32_t key);
@@ -17,6 +18,8 @@ class XContainer : public XComponent {
   virtual void RemoveAll();
   virtual void SetLayout(std::unique_ptr<Layout>);
   virtual void AddComponentListener(std::shared_ptr<ContainerListener>);
+
+  const std::vector<ComponentStorageType>& GetComponents() const;
 
   // XComponent overrides
   virtual void Paint(Graphics* g) override;
@@ -32,7 +35,7 @@ class XContainer : public XComponent {
   virtual void WheelScrolled(MouseWheelEvent*) override;
 
  protected:
-  std::vector<std::tuple<std::unique_ptr<XComponent>, int32_t>> components_;
+  std::vector<ComponentStorageType> components_;
   std::unique_ptr<Layout> layout_;
 
   std::vector<std::shared_ptr<ContainerListener>> container_listeners_;

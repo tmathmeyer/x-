@@ -123,6 +123,7 @@ class XDisplay : public std::enable_shared_from_this<XDisplay> {
   NO_RETURN(XResizeWindow);
   NO_RETURN(XMoveWindow);
   NO_RETURN(XMoveResizeWindow);
+  NO_RETURN(XSetWMProtocols);
 
  private:
   XDisplay(const char* id);

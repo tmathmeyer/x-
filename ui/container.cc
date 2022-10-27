@@ -64,6 +64,11 @@ void XContainer::AddComponentListener(
   container_listeners_.push_back(listener);
 }
 
+const std::vector<XContainer::ComponentStorageType>&
+XContainer::GetComponents() const {
+  return components_;
+}
+
 void XContainer::Paint(Graphics* g) {
   XComponent::Paint(g);
   auto positions = layout_->DoLayout(components_, g->GetDimensions());

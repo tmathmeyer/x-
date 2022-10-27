@@ -29,6 +29,11 @@ LookAndFeel::LookAndFeel() {
   SetColor("ScrollbarColor", gfx::Color::GRAY2);
   SetColor("ScrollbarBorderColor", gfx::Color::GRAY4);
   SetColor("ScrollbarHoveredColor", gfx::Color::BLUE);
+
+  SetColor("AccordionHeaderBackgroundColorOpen", gfx::Color::GRAY7);
+  SetColor("AccordionHeaderBackgroundColorClosed", gfx::Color::GRAY7);
+  SetColor("AccordionHeaderTextColorOpen", gfx::Color::GRAY1);
+  SetColor("AccordionHeaderTextColorClosed", gfx::Color::GRAY1);
 }
 
 XColor LookAndFeel::GetXColor(std::shared_ptr<xlib::XColorMap> colormap,

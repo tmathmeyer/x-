@@ -6,6 +6,7 @@
 #include "event/mouse_motion_listener.h"
 #include "event/mouse_wheel_listener.h"
 #include "graphics.h"
+#include "window_interface.h"
 #include "layout/layout.h"
 
 namespace xpp::ui {
@@ -19,6 +20,7 @@ class XComponent {
   virtual void Paint(Graphics* g);
 
   virtual const XContainer* GetParent() const;
+  virtual WindowInterface* Window() const;
   virtual const std::string& GetName() const;
   virtual const gfx::Rect& GetDimensions() const;
   virtual void SetParent(XContainer* parent);
