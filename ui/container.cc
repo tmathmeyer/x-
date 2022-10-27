@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "container.h"
 
 #include "../gfx/util.h"
@@ -67,6 +69,31 @@ void XContainer::AddComponentListener(
 const std::vector<XContainer::ComponentStorageType>&
 XContainer::GetComponents() const {
   return components_;
+}
+
+std::string XContainer::GetTypeName() const {
+  return "Container";
+}
+
+std::string XContainer::GetName(int indent) const {
+  std::stringstream sstream;
+  for (int i=0; i<indent; i++)
+    sstream << "  ";
+  sstream << GetTypeName() << "@" << XComponent::GetName() << "[";
+  bool loop = false;
+  for (const auto& component : XContainer::GetComponents()) {
+    if (loop)
+      sstream << ",";
+    sstream << "\n" << std::get<0>(component)->GetName(indent+1);
+    loop = true;
+  }
+  if (loop) {
+    sstream << "\n";
+    for (int i=0; i<indent; i++)
+      sstream << "  ";
+  }
+  sstream << "]";
+  return sstream.str();
 }
 
 void XContainer::Paint(Graphics* g) {

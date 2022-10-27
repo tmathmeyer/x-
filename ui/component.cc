@@ -1,6 +1,7 @@
 #include "component.h"
 
 #include <random>
+#include <sstream>
 
 #include "container.h"
 
@@ -47,8 +48,12 @@ WindowInterface* XComponent::Window() const {
   return parent_ ? parent_->Window() : nullptr;
 }
 
-const std::string& XComponent::GetName() const {
-  return uuid_;
+std::string XComponent::GetName(int indent) const {
+  std::stringstream sstream;
+  for (int i=0; i<indent; i++)
+    sstream << "  ";
+  sstream << uuid_;
+  return sstream.str();
 }
 
 const gfx::Rect& XComponent::GetDimensions() const {

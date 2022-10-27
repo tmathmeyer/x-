@@ -10,6 +10,7 @@ class XPanel : public XContainer {
   ~XPanel() override = default;
   void Paint(xpp::ui::Graphics* g) override;
   gfx::Rect CalculatePreferredSize() const;
+  std::string GetTypeName() const override;
 };
 
 }  // namespace xpp::ui

@@ -23,8 +23,7 @@ class AccordionLayout : public Layout {
       switch (static_cast<XAccordion::ComponentUsage>(std::get<1>(tagged))) {
         case XAccordion::ComponentUsage::kTitle: {
           auto height = *comp->GetPreferredHeight();
-          positions.push_back(
-              {comp.get(), {0, 0}, {size.width, height}});
+          positions.push_back({comp.get(), {0, 0}, {size.width, height}});
           tlc = {0, *comp->GetPreferredHeight()};
           break;
         }
@@ -119,6 +118,15 @@ std::optional<uint32_t> XAccordion::GetPreferredHeight() {
   auto container_size = container_->CalculatePreferredSize();
   auto header_size = *(title_->GetPreferredHeight());
   return container_size.height + header_size;
+}
+
+std::optional<uint32_t> XAccordion::GetPreferredWidth() {
+  if (!open_)
+    return title_->GetPreferredWidth();
+
+  auto container_size = container_->CalculatePreferredSize();
+  auto header_size = *(title_->GetPreferredWidth());
+  return std::max(container_size.width, header_size);
 }
 
 void XAccordion::AddComponent(std::unique_ptr<XComponent> component,

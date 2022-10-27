@@ -23,7 +23,7 @@ class XComponent {
 
   virtual const XContainer* GetParent() const;
   virtual WindowInterface* Window() const;
-  virtual const std::string& GetName() const;
+  virtual std::string GetName(int indent = 0) const;
   virtual const gfx::Rect& GetDimensions() const;
   virtual void SetParent(XContainer* parent);
   virtual void Repaint();

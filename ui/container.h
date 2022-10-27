@@ -19,10 +19,13 @@ class XContainer : public XComponent {
   virtual void RemoveAll();
   virtual void SetLayout(std::unique_ptr<Layout>);
   virtual void AddComponentListener(std::shared_ptr<ContainerListener>);
+  virtual std::string GetTypeName() const;
 
   const std::vector<ComponentStorageType>& GetComponents() const;
 
+
   // XComponent overrides
+  std::string GetName(int indent = 0) const override;
   virtual void Paint(Graphics* g) override;
 
   // XComponent listener overrides

@@ -13,6 +13,7 @@ class ScrollPanelViewport : public XPanel {
   ScrollPanelViewport(XScrollPanel* panel);
   void Paint(Graphics* g) override;
   gfx::Rect GetCanvasSize(gfx::Rect size) const;
+  std::string GetTypeName() const override;
 
   virtual void MouseEntered(MouseMotionEvent*) override;
   virtual void MouseExited(MouseMotionEvent*) override;

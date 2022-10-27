@@ -15,14 +15,18 @@ std::vector<xpp::ui::Layout::Position> PanelLayout::DoLayout(
     const auto& comp = std::get<0>(tagged);
     std::optional<gfx::Rect> pref = comp->GetPreferredSize();
     if (pref.has_value()) {
-      xpp::ui::Layout::Position pos = {comp.get(), tlc, pref.value()};
+      gfx::Rect actual = {
+        std::max(pref->width, size.width),
+        pref->height
+      };
+      xpp::ui::Layout::Position pos = {comp.get(), tlc, actual};
       tlc = tlc + gfx::Coord(0, pref->height);
       positions.push_back(pos);
     } else {
       uint32_t height = comp->GetPreferredHeight().value_or(
         size.height / entries.size());
-      uint32_t width = comp->GetPreferredWidth().value_or(
-        size.width);
+      uint32_t width = std::max(comp->GetPreferredWidth().value_or(
+        size.width), size.width);
       xpp::ui::Layout::Position pos = {comp.get(), tlc, {width, height}};
       tlc = tlc + gfx::Coord{0, height};
       positions.push_back(pos);

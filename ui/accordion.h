@@ -15,6 +15,7 @@ class XAccordion : public XPanel {
   XAccordion(std::string text);
   XAccordion(std::string, uint32_t);
   std::optional<uint32_t> GetPreferredHeight() override;
+  std::optional<uint32_t> GetPreferredWidth() override;
 
   void AddComponent(std::unique_ptr<XComponent> component,
                     int32_t key) override;

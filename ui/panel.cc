@@ -45,4 +45,9 @@ gfx::Rect XPanel::CalculatePreferredSize() const {
   return {max_width, actual_height};
 }
 
+std::string XPanel::GetTypeName() const {
+  return "Panel";
+}
+
+
 }  // namespace xpp::ui

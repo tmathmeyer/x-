@@ -245,7 +245,21 @@ gfx::Rect ScrollPanelViewport::GetCanvasSize(gfx::Rect size) const {
     height += actual.height;
     width = std::max(width, actual.width);
   };
-  return {width, height};
+
+  uint32_t m_height = size.height;
+  uint32_t m_width = size.width;
+  if (height > m_height)
+    m_width = size.width - 50;
+  if (width > m_width)
+    m_height = size.height - 50;
+  if (height > m_height)
+    m_width = size.width - 50;
+
+  return {std::max(width, m_width), std::max(m_height, height)};
+}
+
+std::string ScrollPanelViewport::GetTypeName() const {
+  return "SPV";
 }
 
 void ScrollPanelViewport::Paint(Graphics* g) {
