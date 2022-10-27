@@ -23,7 +23,8 @@ class AccordionLayout : public Layout {
       switch (static_cast<XAccordion::ComponentUsage>(std::get<1>(tagged))) {
         case XAccordion::ComponentUsage::kTitle: {
           auto header = *comp->GetPreferredSize();
-          positions.push_back({comp.get(), {0, 0}, {size.width, header.height}});
+          positions.push_back(
+              {comp.get(), {0, 0}, {size.width, header.height}});
           tlc = {0, comp->GetPreferredSize()->height};
           break;
         }
@@ -40,6 +41,7 @@ class AccordionLayout : public Layout {
     }
     return positions;
   }
+
  private:
   XAccordion* parent_;
 };
@@ -80,7 +82,7 @@ class AccordionTitle : public XPanel {
 
   std::optional<gfx::Rect> GetPreferredSize() const override {
     int32_t length = text_.length();
-    return gfx::Rect{size_ * length * 5 + 30, size_ * 4 + 40};
+    return gfx::Rect{size_ * length * 2.42 + 30, size_ * 4 + 40};
   }
 
  private:
@@ -113,7 +115,13 @@ XAccordion::XAccordion(std::string text, uint32_t fontsize) {
 std::optional<gfx::Rect> XAccordion::GetPreferredSize() const {
   if (!open_)
     return title_->GetPreferredSize();
-  return gfx::Rect{0, 0};
+
+  auto container_size = container_->CalculatePreferredSize();
+  auto header_size = *(title_->GetPreferredSize());
+  header_size = {std::max(header_size.width, container_size.width),
+                 header_size.height + container_size.height};
+  return header_size;
+
 }
 
 void XAccordion::AddComponent(std::unique_ptr<XComponent> component,
