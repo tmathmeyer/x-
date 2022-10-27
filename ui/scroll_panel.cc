@@ -7,7 +7,7 @@ namespace xpp::ui {
 
 namespace {
 
-gfx::Rect DeterminePaintSize(const XComponent* comp, const gfx::Rect size) {
+gfx::Rect DeterminePaintSize(XComponent* comp, const gfx::Rect size) {
   const auto preferred = comp->GetPreferredSize();
   if (preferred.has_value())
     return *preferred;

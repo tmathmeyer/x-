@@ -8,7 +8,7 @@ class XButton : public XComponent {
  public:
   XButton(std::string text);
   void Paint(xpp::ui::Graphics* g) override;
-  std::optional<gfx::Rect> GetPreferredSize() const override;
+  std::optional<gfx::Rect> GetPreferredSize() override;
 
   void Enter();
   void Exit();

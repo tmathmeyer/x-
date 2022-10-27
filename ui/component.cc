@@ -55,22 +55,41 @@ const gfx::Rect& XComponent::GetDimensions() const {
   return size_;
 }
 
-std::optional<gfx::Rect> XComponent::GetPreferredSize() const {
-  auto height = GetPreferredHeight();
-  if (!height.has_value())
+std::optional<gfx::Rect> XComponent::GetPreferredSize() {
+  if (is_in_size_method_.test_and_set())
     return std::nullopt;
+
+  auto height = GetPreferredHeight();
+  if (!height.has_value()) {
+    is_in_size_method_.clear();
+    return std::nullopt;
+  }
+
   auto width = GetPreferredWidth();
+  is_in_size_method_.clear();
   if (!width.has_value())
     return std::nullopt;
   return gfx::Rect{*width, *height};
 }
 
-std::optional<uint32_t> XComponent::GetPreferredHeight() const {
-  return std::nullopt;
+std::optional<uint32_t> XComponent::GetPreferredHeight() {
+  if (is_in_size_method_.test_and_set())
+    return std::nullopt;
+  auto prefsize = GetPreferredSize();
+    is_in_size_method_.clear();
+  if (!prefsize.has_value())
+    return std::nullopt;
+  return prefsize->height;
 }
 
-std::optional<uint32_t> XComponent::GetPreferredWidth() const {
-  return std::nullopt;
+std::optional<uint32_t> XComponent::GetPreferredWidth() {
+  if (is_in_size_method_.test_and_set())
+    return std::nullopt;
+  auto prefsize = GetPreferredSize();
+    is_in_size_method_.clear();
+  if (!prefsize.has_value())
+    return std::nullopt;
+  return prefsize->width;
 }
 
 void XComponent::SetDimensions(gfx::Rect size) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 
 #include "event/mouse_listener.h"
@@ -27,9 +28,9 @@ class XComponent {
   virtual void SetParent(XContainer* parent);
   virtual void Repaint();
   virtual void SetDimensions(gfx::Rect size);
-  virtual std::optional<gfx::Rect> GetPreferredSize() const;
-  virtual std::optional<uint32_t> GetPreferredWidth() const;
-  virtual std::optional<uint32_t> GetPreferredHeight() const;
+  virtual std::optional<gfx::Rect> GetPreferredSize();
+  virtual std::optional<uint32_t> GetPreferredWidth();
+  virtual std::optional<uint32_t> GetPreferredHeight();
 
   virtual void AddMouseMotionListener(std::shared_ptr<MouseMotionListener>);
   virtual void AddMouseListener(std::shared_ptr<MouseListener>);
@@ -48,6 +49,8 @@ class XComponent {
   XContainer* parent_ = nullptr;
   std::string uuid_ = "";
   gfx::Rect size_ = {0, 0};
+
+  std::atomic_flag is_in_size_method_ = false;
 
   std::vector<std::shared_ptr<MouseMotionListener>> motion_listeners_;
   std::vector<std::shared_ptr<MouseListener>> mouse_listeners_;

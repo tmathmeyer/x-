@@ -49,7 +49,7 @@ void XButton::Paint(xpp::ui::Graphics* g) {
   g->DrawText({hpadding_, (height - vshadow_ - g->GetFontHeight()) / 2}, content_);
 }
 
-std::optional<gfx::Rect> XButton::GetPreferredSize() const {
+std::optional<gfx::Rect> XButton::GetPreferredSize() {
   return gfx::Rect(content_.length() * 22 + hpadding_ * 2, 70);
 }
 
