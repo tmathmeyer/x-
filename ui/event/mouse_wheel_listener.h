@@ -15,6 +15,7 @@ struct MouseWheelEvent {
 
 class MouseWheelListener {
  public:
+  virtual ~MouseWheelListener() = default;
   virtual void WheelScrolled(MouseWheelEvent*) = 0;
 };
 

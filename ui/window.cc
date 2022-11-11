@@ -299,7 +299,8 @@ void XWindow::RunEventLoop() {
         break;
       }
       case ConfigureNotify:
-        exposed_to_ = {event.xconfigure.width, event.xconfigure.height};
+        exposed_to_ = {static_cast<uint32_t>(event.xconfigure.width),
+                       static_cast<uint32_t>(event.xconfigure.height)};
         if (exposed_to_ != dimensions_)
           Repaint();
         break;
@@ -310,7 +311,8 @@ void XWindow::RunEventLoop() {
         // puts("KeyRelease");
         break;
       case Expose:
-        exposed_to_ = {event.xexpose.width, event.xexpose.height};
+        exposed_to_ = {static_cast<uint32_t>(event.xexpose.width),
+                       static_cast<uint32_t>(event.xexpose.height)};
         if (exposed_to_ != dimensions_)
           Repaint();
         break;

@@ -15,7 +15,7 @@ class XPixmap : public XDrawable {
   ::Drawable Drawable() override;
 
  private:
-  friend class Traits<XPixmap>;
+  friend struct Traits<XPixmap>;
   XPixmap(std::shared_ptr<XDisplay>, ::Pixmap);
 
   ::Pixmap pixmap_;

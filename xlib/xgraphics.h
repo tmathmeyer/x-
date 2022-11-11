@@ -96,7 +96,7 @@ class XGraphics {
             std::shared_ptr<XColorMap> colormap);
 
   // Allow XDrawable to create XGraphics
-  friend class Traits<XGraphics>;
+  friend struct Traits<XGraphics>;
 };
 
 #undef DRAWABLE_METHOD

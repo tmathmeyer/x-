@@ -34,7 +34,8 @@ class AccordionLayout : public Layout {
       }
     }
     if (body && parent_->IsOpen()) {
-      gfx::Rect leftover = {size.width, std::max(0l, size.height - tlc.y)};
+      auto height = static_cast<uint32_t>(std::max(0l, size.height - tlc.y));
+      gfx::Rect leftover = {size.width, height};
       auto body_size = body->GetPreferredSize().value_or(leftover);
       positions.push_back({body, tlc, body_size});
     }
@@ -81,7 +82,8 @@ class AccordionTitle : public XPanel {
 
   std::optional<gfx::Rect> GetPreferredSize() override {
     int32_t length = text_.length();
-    return gfx::Rect{size_ * length * 2.42 + 30, size_ * 4 + 40};
+    uint32_t width = size_ * length * 2.42 + 30;
+    return gfx::Rect{width, size_ * 4 + 40};
   }
 
  private:

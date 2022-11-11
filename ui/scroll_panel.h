@@ -43,8 +43,8 @@ class ScrollBar : public XComponent {
  public:
   ScrollBar(XScrollPanel* panel, ScrollBarTrack::Mode mode);
   void Paint(Graphics* g) override;
-  void MouseEntered();
-  void MouseExited();
+  void OnMouseEntered();
+  void OnMouseExited();
   void Scroll(gfx::Coord vec);
 
  private:

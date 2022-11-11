@@ -8,6 +8,7 @@ struct Traits {
   using XorgType = int;
   static XppType Export(const XorgType& input) {
     static_assert(false && sizeof(XppType), "No converted defined");
+    (void)input;
     return XppType();
   }
 };

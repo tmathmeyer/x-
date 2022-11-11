@@ -25,11 +25,11 @@ ScrollBarMouseMotion::ScrollBarMouseMotion(ScrollBar* scrollbar)
     : MouseMotionListener(), scrollbar_(scrollbar) {}
 
 void ScrollBarMouseMotion::MouseEntered(MouseMotionEvent*) {
-  scrollbar_->MouseEntered();
+  scrollbar_->OnMouseEntered();
 }
 
 void ScrollBarMouseMotion::MouseExited(MouseMotionEvent*) {
-  scrollbar_->MouseExited();
+  scrollbar_->OnMouseExited();
 }
 
 void ScrollBarMouseMotion::MouseDragged(MouseMotionEvent* e) {
@@ -68,12 +68,12 @@ void ScrollBar::Paint(Graphics* g) {
   g->DrawRoundedRect({0, 0}, g->GetDimensions(), 5);
 }
 
-void ScrollBar::MouseEntered() {
+void ScrollBar::OnMouseEntered() {
   hovered_ = true;
   Repaint();
 }
 
-void ScrollBar::MouseExited() {
+void ScrollBar::OnMouseExited() {
   hovered_ = false;
   Repaint();
 }
@@ -166,11 +166,13 @@ std::vector<Layout::Position> ScrollBarTrackLayout::DoLayout(
   if (mode_ == ScrollBarTrack::kVertical) {
     result.push_back({std::get<0>(entries[0]).get(),
                       {scroll_bar_margins, scroll_bar_location},
-                      {bar_thickness, scroll_bar_length}});
+                      {static_cast<uint32_t>(bar_thickness),
+                       static_cast<uint32_t>(scroll_bar_length)}});
   } else {
     result.push_back({std::get<0>(entries[0]).get(),
                       {scroll_bar_location, scroll_bar_margins},
-                      {scroll_bar_length, bar_thickness}});
+                      {static_cast<uint32_t>(scroll_bar_length),
+                       static_cast<uint32_t>(bar_thickness)}});
   }
 
   return result;
@@ -340,7 +342,6 @@ void ScrollPanelViewport::MouseReleased(MouseEvent* event) {
   XPanel::MouseReleased(&copy);
   event->active = copy.active;
 }
-
 
 }  // namespace internal
 

@@ -31,7 +31,7 @@ class XColorMap {
             std::shared_ptr<XDisplay> display);
 
   // Allow XWindow to create XColorMap
-  friend class Traits<XColorMap>;
+  friend struct Traits<XColorMap>;
 };
 
 #undef DISPLAY_METHOD

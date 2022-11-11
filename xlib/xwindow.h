@@ -69,7 +69,7 @@ class XWindow : public XDrawable {
           bool destroy_on_delete);
 
   // Allow XDisplay to create XWindow
-  friend class Traits<XWindow>;
+  friend struct Traits<XWindow>;
 };
 
 #undef NO_CONVERSIONS

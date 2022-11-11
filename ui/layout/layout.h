@@ -29,6 +29,8 @@ class Layout {
     Position() : Position(nullptr, {0, 0}) {}
   };
 
+  virtual ~Layout() = default;
+
   virtual std::vector<Position> DoLayout(
       std::vector<std::tuple<std::unique_ptr<XComponent>, int32_t>>& entries,
       gfx::Rect size) = 0;
